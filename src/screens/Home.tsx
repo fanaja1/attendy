@@ -11,7 +11,7 @@ export default function Home({ navigation }: Props) {
   const handlePress = () => {
     const classes = getGroups();
     if (classes.length === 0) {
-      navigation.navigate('CreateGroup');
+      navigation.navigate('AddGroup');
     } else {
       navigation.navigate('GroupList');
     }
