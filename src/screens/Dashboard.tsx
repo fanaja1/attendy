@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Button, FlatList, ScrollView, StyleSheet } from 'react-native';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Member } from '../types/models';
 import { getMembers } from '../database/db';
+import { useLogNavigationStack } from '../utils/hooks';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 type DashboardRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
 
 export default function Dashboard() {
+  useLogNavigationStack();
+
   const navigation = useNavigation<DashboardNavigationProp>();
   const route = useRoute<DashboardRouteProp>();
   const { groupId } = route.params;
@@ -17,19 +20,22 @@ export default function Dashboard() {
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchMembers = () => {
-      const fetchedMembers = getMembers(groupId);
-      setMembers(fetchedMembers);
+  useFocusEffect(
+    useCallback(() => {
+      const data = getMembers(groupId);
+      if (data.length === 0) {
+        navigation.navigate('AddMember', { groupId });
+        return;
+      }
+      setMembers(data);
       setDates(['2025-05-01', '2025-05-05', '2025-05-10']);
-    };
-    fetchMembers();
-  }, [groupId]);
+    }, [groupId])
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Button title="Add Member" onPress={() => navigation.navigate('AddMember', { groupId })} />
+        <Button title="Add Member" onPress={() => navigation.replace('AddMember', { groupId })} />
         <Button title="Take Presence" onPress={() => {}} />
       </View>
 

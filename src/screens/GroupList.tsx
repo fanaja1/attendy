@@ -1,31 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Group } from '../types/models';
 import { deleteGroup, getGroups } from '../database/db';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { useLogNavigationStack } from '../utils/hooks';
 
 type GroupListNavigationProp = NativeStackNavigationProp<RootStackParamList, 'GroupList'>;
 
 export default function GroupList() {
+  useLogNavigationStack();
+
   const [groups, setGroups] = useState<Group[]>([]);
   const navigation = useNavigation<GroupListNavigationProp>();
 
-  useEffect(() => {
-    const data = getGroups();
-    setGroups(data);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const data = getGroups();
+      if (data.length === 0) {
+        navigation.navigate('AddGroup');
+      } else {
+        setGroups(data);
+      }
+    }, [])
+  );
 
   const handleDelete = (id: string) => {
-  try {
-    deleteGroup(id);
-    setGroups((prevGroups) => prevGroups.filter((group) => group.id !== id));
-    console.log(`Group ${id} deleted successfully`);
-  } catch (error) {
-    console.error(`Error deleting group ${id}:`, error);
-  }
-};
+    try {
+      deleteGroup(id);
+      setGroups((prevGroups) => prevGroups.filter((group) => group.id !== id));
+      console.log(`Group ${id} deleted successfully`);
+    } catch (error) {
+      console.error(`Error deleting group ${id}:`, error);
+    }
+  };
 
   const handlePressGroup = (group: Group) => {
     navigation.navigate('Dashboard', { groupId: group.id });

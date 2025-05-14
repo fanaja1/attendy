@@ -2,19 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { setupDatabase, getGroups } from '../database/db';
+import { useLogNavigationStack } from '../utils/hooks';
 
 type Props = NativeStackScreenProps<any, 'Home'>;
 
 export default function Home({ navigation }: Props) {
-  const [isFirstRun, setIsFirstRun] = useState<boolean>(false);
+  useLogNavigationStack();
 
   const handlePress = () => {
-    const classes = getGroups();
-    if (classes.length === 0) {
-      navigation.navigate('AddGroup');
-    } else {
-      navigation.navigate('GroupList');
-    }
+    navigation.navigate('GroupList');
   };
 
   useEffect(() => {
