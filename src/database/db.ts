@@ -3,7 +3,6 @@ import { Group, Member } from '../types/models';
 
 const db = SQLite.openDatabaseSync('attendy.db');
 
-// Fonction de setup de la base de données
 export const setupDatabase = () => {
   try {
     db.execSync(`
@@ -29,7 +28,6 @@ export const setupDatabase = () => {
   }
 };
 
-// Fonction pour ajouter un groupe
 export const addGroup = (id: string, name: string, location: string) => {
   try {
     const query = `
@@ -43,7 +41,6 @@ export const addGroup = (id: string, name: string, location: string) => {
   }
 };
 
-// Fonction pour obtenir tous les groupes
 export const getGroups = (): Group[] => {
   try {
     const resultSet = db.getAllSync('SELECT * FROM groupes');
@@ -54,7 +51,6 @@ export const getGroups = (): Group[] => {
   }
 };
 
-// Fonction pour mettre à jour un groupe
 export const updateGroup = (id: string, name: string, location: string) => {
   try {
     const query = `
@@ -69,7 +65,6 @@ export const updateGroup = (id: string, name: string, location: string) => {
   }
 };
 
-// Fonction pour supprimer un groupe
 export const deleteGroup = (id: string) => {
   try {
     const query = `DELETE FROM groupes WHERE id = '${id}';`;
@@ -80,7 +75,6 @@ export const deleteGroup = (id: string) => {
   }
 };
 
-// Fonction pour ajouter un membre
 export const addMember = (id: string, groupId: string, name: string) => {
   try {
     const query = `
@@ -94,7 +88,6 @@ export const addMember = (id: string, groupId: string, name: string) => {
   }
 };
 
-// Fonction pour obtenir tous les membres
 export const getMembers = (groupId?: string): Member[] => {
   try {
     const query = groupId 
