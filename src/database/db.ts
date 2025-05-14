@@ -102,3 +102,13 @@ export const getMembers = (groupId?: string): Member[] => {
     return [];
   }
 };
+
+export const getMemberById = (id: string): Member | null => {
+  try {
+    const result = db.getFirstSync('SELECT * FROM members WHERE id = ?', [id]);
+    return result ? (result as Member) : null;
+  } catch (error) {
+    console.error('Error fetching member by ID: ', error);
+    return null;
+  }
+};

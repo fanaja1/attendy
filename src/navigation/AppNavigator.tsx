@@ -5,6 +5,7 @@ import GroupList from '../screens/GroupList';
 import AddGroup from '../screens/AddGroup';
 import Dashboard from '../screens/Dashboard';
 import AddMember from '../screens/AddMember';
+import MemberInfo from '../screens/MemberInfo';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ export default function AppNavigator() {
         <Stack.Screen name="AddGroup" component={AddGroup} />
         <Stack.Screen name="Dashboard" component={Dashboard} /> 
         <Stack.Screen name="AddMember" component={AddMember} /> 
+        <Stack.Screen name="MemberInfo" component={MemberInfo} />
       </Stack.Navigator>
     </NavigationContainer>
   );
