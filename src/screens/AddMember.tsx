@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { addMember } from '../database/db'; // Importation de la fonction addMember
+import { addMember } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
 
@@ -12,8 +12,8 @@ type AddMemberRouteProp = RouteProp<RootStackParamList, 'AddMember'>;
 export default function AddMember() {
   const [name, setName] = useState('');
   const navigation = useNavigation<AddMemberNavigationProp>();
-  const route = useRoute<AddMemberRouteProp>(); // Utilisation de RouteProp ici
-  const { groupId } = route.params; // `groupId` est bien typé ici
+  const route = useRoute<AddMemberRouteProp>();
+  const { groupId } = route.params;
 
   const handleAddMember = () => {
     const newMember = {
@@ -22,10 +22,8 @@ export default function AddMember() {
       name,
     };
 
-    // Ajouter le membre à la base de données
     addMember(newMember.id, newMember.groupId, newMember.name);
 
-    // Rediriger vers le tableau de bord du groupe après l'ajout du membre
     navigation.navigate('Dashboard', { groupId });
   };
 
