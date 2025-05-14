@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { addGroup, getMembersByGroupId } from '../database/db'; // Supposons cette fonction dans db
+import { addGroup, getMembers } from '../database/db'; // Supposons cette fonction dans db
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
 
@@ -13,7 +13,7 @@ export default function AddGroup() {
   const [location, setLocation] = useState('');
   const navigation = useNavigation<AddGroupNavigationProp>();
 
-  const handleAddGroup = async () => {
+  const handleAddGroup = () => {
     const newGroup = {
       id: uuid.v4() as string,
       name,
@@ -21,10 +21,10 @@ export default function AddGroup() {
     };
 
     // Ajout du groupe dans la base de données
-    await addGroup(newGroup.id, newGroup.name, newGroup.location);
+    addGroup(newGroup.id, newGroup.name, newGroup.location);
 
     // Vérifier si le groupe a des membres
-    const members = await getMembersByGroupId(newGroup.id);
+    const members = getMembers(newGroup.id);
 
     // Redirection en fonction de la présence des membres
     if (members.length === 0) {

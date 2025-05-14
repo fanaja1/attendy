@@ -80,18 +80,6 @@ export const deleteGroup = (id: string) => {
   }
 };
 
-// Fonction pour obtenir les membres d'un groupe
-export const getMembersByGroupId = (groupId: string): Member[] => {
-  try {
-    const query = 'SELECT * FROM members WHERE groupId = ?';
-    const resultSet = db.getAllSync(query, [groupId]);
-    return resultSet as Member[];
-  } catch (error) {
-    console.error('Error fetching members: ', error);
-    return [];
-  }
-};
-
 // Fonction pour ajouter un membre
 export const addMember = (id: string, groupId: string, name: string) => {
   try {

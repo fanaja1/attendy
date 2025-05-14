@@ -19,7 +19,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Récupérer les membres du groupe et les dates de présence
-    const fetchMembers = async () => {
+    const fetchMembers = () => {
       // Récupérer les membres et dates depuis la base de données
       const fetchedMembers = getMembers(groupId);
       setMembers(fetchedMembers);

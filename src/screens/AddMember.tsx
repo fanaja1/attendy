@@ -15,7 +15,7 @@ export default function AddMember() {
   const route = useRoute<AddMemberRouteProp>(); // Utilisation de RouteProp ici
   const { groupId } = route.params; // `groupId` est bien typé ici
 
-  const handleAddMember = async () => {
+  const handleAddMember = () => {
     const newMember = {
       id: uuid.v4() as string,
       groupId,
