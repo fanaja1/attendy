@@ -25,7 +25,7 @@ const QRCodeCustom: React.FC<QRCodeCustomProps> = ({ value, size }) => {
   );
 };
 
-export function CirclePieces() {
+const CirclePieces = () => {
   return (
     <QRCodeStyled
       data={'Styling Pieces'}
@@ -38,7 +38,7 @@ export function CirclePieces() {
   );
 }
 
-export function CustomEyes() {
+const CustomEyes = () => {
   return (
     <QRCodeStyled
       data={'Custom Corners'}

@@ -10,7 +10,7 @@ import { useLogNavigationStack } from '../utils/hooks';
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 type DashboardRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
 
-export default function Dashboard() {
+const Dashboard = () => {
   useLogNavigationStack();
 
   const navigation = useNavigation<DashboardNavigationProp>();
@@ -110,3 +110,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
   },
 });
+
+export default Dashboard;

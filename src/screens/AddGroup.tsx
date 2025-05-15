@@ -9,7 +9,7 @@ import { useLogNavigationStack } from '../utils/hooks';
 
 type AddGroupNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddGroup'>;
 
-export default function AddGroup() {
+const AddGroup = () => {
   useLogNavigationStack();
 
   const [name, setName] = useState('');
@@ -65,3 +65,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+export default AddGroup;

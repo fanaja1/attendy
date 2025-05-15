@@ -6,7 +6,7 @@ import { useLogNavigationStack } from '../utils/hooks';
 
 type Props = NativeStackScreenProps<any, 'Home'>;
 
-export default function Home({ navigation }: Props) {
+const Home = ({ navigation }: Props) => {
   useLogNavigationStack();
 
   const handlePress = () => {
@@ -24,3 +24,5 @@ export default function Home({ navigation }: Props) {
     </View>
   );
 }
+
+export default Home;

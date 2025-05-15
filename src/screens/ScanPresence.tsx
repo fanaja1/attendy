@@ -5,7 +5,7 @@ import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ScanPresence() {
+const ScanPresence = () => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [isDateModalVisible, setDateModalVisible] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -38,34 +38,34 @@ export default function ScanPresence() {
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
-  }
+  const toggleCameraFacing = () => {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  };
 
-  function handleBarCodeScanned({ data }: { data: string }) {
+  const handleBarCodeScanned = ({ data }: { data: string }) => {
     if (!scannedList.includes(data)) {
       setScannedData(data);
       setScanConfirmVisible(true);
     }
-  }
+  };
 
-  function confirmScan() {
+  const confirmScan = () => {
     if (scannedData) {
-      setScannedList((prev) => [...prev, scannedData]);
+      setScannedList(prev => [...prev, scannedData]);
       setScannedData(null);
       setScanConfirmVisible(false);
     }
-  }
+  };
 
-  function handleDone() {
+  const handleDone = () => {
     // TODO: enregistrer scannedList + selectedDate en base si besoin
     navigation.goBack();
-  }
+  };
 
-  function onDateChange(event: any, date?: Date) {
+  const onDateChange = (event: any, date?: Date) => {
     if (date) setSelectedDate(date);
     setDateModalVisible(false);
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -106,7 +106,7 @@ export default function ScanPresence() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -142,3 +142,5 @@ const styles = StyleSheet.create({
     margin: 20,
   },
 });
+
+export default ScanPresence;

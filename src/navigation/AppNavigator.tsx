@@ -10,7 +10,7 @@ import ScanPresence from '../screens/ScanPresence';
 
 const Stack = createNativeStackNavigator();
 
-export default function AppNavigator() {
+const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -24,4 +24,6 @@ export default function AppNavigator() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
+
+export default AppNavigator;

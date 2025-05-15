@@ -10,7 +10,7 @@ import { useLogNavigationStack } from '../utils/hooks';
 type AddMemberNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddMember'>;
 type AddMemberRouteProp = RouteProp<RootStackParamList, 'AddMember'>;
 
-export default function AddMember() {
+const AddMember = () => {
   useLogNavigationStack();
 
   const [name, setName] = useState('');
@@ -59,3 +59,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+export default AddMember;
