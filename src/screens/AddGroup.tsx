@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { addGroup, getMembers } from '../database/db';
+import { addGroup, getMembersByGroup } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
 import { useLogNavigationStack } from '../utils/hooks';
 
 type AddGroupNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddGroup'>;
 
-export default function AddGroup() {
+const AddGroup = () => {
   useLogNavigationStack();
 
   const [name, setName] = useState('');
@@ -65,3 +65,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+export default AddGroup;

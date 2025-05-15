@@ -9,7 +9,7 @@ import { useLogNavigationStack } from '../utils/hooks';
 
 type GroupListNavigationProp = NativeStackNavigationProp<RootStackParamList, 'GroupList'>;
 
-export default function GroupList() {
+const GroupList = () => {
   useLogNavigationStack();
 
   const [groups, setGroups] = useState<Group[]>([]);
@@ -98,3 +98,5 @@ const styles = StyleSheet.create({
     color: '#777',
   },
 });
+
+export default GroupList;

@@ -4,13 +4,13 @@ import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navig
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Member } from '../types/models';
-import { getMembers } from '../database/db';
+import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
 import { useLogNavigationStack } from '../utils/hooks';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 type DashboardRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
 
-export default function Dashboard() {
+const Dashboard = () => {
   useLogNavigationStack();
 
   const navigation = useNavigation<DashboardNavigationProp>();
@@ -19,16 +19,24 @@ export default function Dashboard() {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<string[]>([]);
+  const [presenceMap, setPresenceMap] = useState<Record<string, string[]>>({});
 
   useFocusEffect(
     useCallback(() => {
-      const data = getMembers(groupId);
+      const data = getMembersByGroup(groupId);
       if (data.length === 0) {
         navigation.navigate('AddMember', { groupId });
         return;
       }
+
+      const presence = getPresenceMap(groupId);
+
       setMembers(data);
-      setDates(['2025-05-01', '2025-05-05', '2025-05-10']);
+      setPresenceMap(presence);
+
+      // You may want to compute all unique dates dynamically from presence
+      const uniqueDates = Array.from(new Set(Object.values(presence).flat()));
+      setDates(getDates(groupId));
     }, [groupId])
   );
 
@@ -39,9 +47,14 @@ export default function Dashboard() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Button title="Take manually" onPress={() => {}} />
-        <Button title="Scan Presence" onPress={() => {}} />
+        <Button title="Scan Presence" onPress={() => navigation.navigate('ScanPresence', { groupId })} />
+        <Button title="Add Date" onPress={() => {
+          const newDate = new Date().toISOString().split('T')[0];
+          addDate(groupId, newDate);
+          setDates(getDates(groupId));
+        }} />
       </View>
+
 
       <ScrollView horizontal>
         <View>
@@ -59,9 +72,14 @@ export default function Dashboard() {
               <TouchableOpacity onPress={() => handlePressMember(item.id)}>
                 <View style={styles.tableRow}>
                   <Text style={styles.cell}>{item.name}</Text>
-                  {dates.map((_, index) => (
-                    <Text key={index} style={styles.cell}></Text>
-                  ))}
+                  {dates.map((date, index) => {
+                    const present = presenceMap[item.id]?.includes(date);
+                    return (
+                      <Text key={index} style={styles.cell}>
+                        {present ? '✔️' : '❌'}
+                      </Text>
+                    );
+                  })}
                 </View>
               </TouchableOpacity>
             )}
@@ -74,7 +92,7 @@ export default function Dashboard() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -110,3 +128,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
   },
 });
+
+export default Dashboard;
