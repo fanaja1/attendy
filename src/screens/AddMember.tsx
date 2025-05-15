@@ -5,14 +5,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { addMember } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
-import { useLogNavigationStack } from '../utils/hooks';
 
 type AddMemberNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddMember'>;
 type AddMemberRouteProp = RouteProp<RootStackParamList, 'AddMember'>;
 
-const AddMember = () => {
-  useLogNavigationStack();
-
+export default function AddMember() {
   const [name, setName] = useState('');
   const navigation = useNavigation<AddMemberNavigationProp>();
   const route = useRoute<AddMemberRouteProp>();
@@ -26,7 +23,8 @@ const AddMember = () => {
     };
 
     addMember(newMember.id, newMember.groupId, newMember.name);
-    navigation.goBack();
+
+    navigation.navigate('Dashboard', { groupId });
   };
 
   return (
@@ -59,5 +57,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
-
-export default AddMember;

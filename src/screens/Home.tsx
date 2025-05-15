@@ -2,25 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { setupDatabase, getGroups } from '../database/db';
-import { useLogNavigationStack } from '../utils/hooks';
-
-import * as FileSystem from 'expo-file-system'; // Ajoute ceci en haut
 
 type Props = NativeStackScreenProps<any, 'Home'>;
 
-const Home = ({ navigation }: Props) => {
-  useLogNavigationStack();
+export default function Home({ navigation }: Props) {
+  const [isFirstRun, setIsFirstRun] = useState<boolean>(false);
 
   const handlePress = () => {
-    navigation.navigate('GroupList');
-  };
-
-  const handleDeleteDb = async () => {
-    try {
-      await FileSystem.deleteAsync(`${FileSystem.documentDirectory}SQLite/attendy.db`);
-      alert('Base de données supprimée. Redémarrez l\'application.');
-    } catch (e) {
-      alert('Erreur lors de la suppression : ' + e);
+    const classes = getGroups();
+    if (classes.length === 0) {
+      navigation.navigate('AddGroup');
+    } else {
+      navigation.navigate('GroupList');
     }
   };
 
@@ -32,9 +25,6 @@ const Home = ({ navigation }: Props) => {
     <View>
       <Text>Welcome to the App</Text>
       <Button title="Enter" onPress={handlePress} />
-      <Button title="Supprimer la base de données" color="red" onPress={handleDeleteDb} />
     </View>
   );
 }
-
-export default Home;

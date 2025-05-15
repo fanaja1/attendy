@@ -4,6 +4,4 @@ export type RootStackParamList = {
   AddGroup: undefined;
   Dashboard: { groupId: string };
   AddMember: { groupId: string };
-  MemberInfo: { memberId: string };
-  ScanPresence: { groupId: string };
 };
