@@ -40,7 +40,7 @@ export default function Dashboard() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Button title="Take manually" onPress={() => {}} />
-        <Button title="Scan Presence" onPress={() => {}} />
+        <Button title="Scan Presence" onPress={() => navigation.navigate('ScanPresence', { groupId })} />
       </View>
 
       <ScrollView horizontal>

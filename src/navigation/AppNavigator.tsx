@@ -6,6 +6,7 @@ import AddGroup from '../screens/AddGroup';
 import Dashboard from '../screens/Dashboard';
 import AddMember from '../screens/AddMember';
 import MemberInfo from '../screens/MemberInfo';
+import ScanPresence from '../screens/ScanPresence';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Dashboard" component={Dashboard} /> 
         <Stack.Screen name="AddMember" component={AddMember} /> 
         <Stack.Screen name="MemberInfo" component={MemberInfo} />
+        <Stack.Screen name="ScanPresence" component={ScanPresence} />
       </Stack.Navigator>
     </NavigationContainer>
   );
