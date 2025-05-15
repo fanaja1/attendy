@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Button, FlatList, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Button, FlatList, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
@@ -32,11 +32,15 @@ export default function Dashboard() {
     }, [groupId])
   );
 
+  const handlePressMember = (memberId: string) => {
+    navigation.navigate('MemberInfo', { memberId });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Button title="Add Member" onPress={() => navigation.replace('AddMember', { groupId })} />
-        <Button title="Take Presence" onPress={() => {}} />
+        <Button title="Take manually" onPress={() => {}} />
+        <Button title="Scan Presence" onPress={() => {}} />
       </View>
 
       <ScrollView horizontal>
@@ -52,12 +56,14 @@ export default function Dashboard() {
             data={members}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.tableRow}>
-                <Text style={styles.cell}>{item.name}</Text>
-                {dates.map((_, index) => (
-                  <Text key={index} style={styles.cell}></Text>
-                ))}
-              </View>
+              <TouchableOpacity onPress={() => handlePressMember(item.id)}>
+                <View style={styles.tableRow}>
+                  <Text style={styles.cell}>{item.name}</Text>
+                  {dates.map((_, index) => (
+                    <Text key={index} style={styles.cell}></Text>
+                  ))}
+                </View>
+              </TouchableOpacity>
             )}
           />
         </View>
