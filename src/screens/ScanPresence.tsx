@@ -1,24 +1,65 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, FlatList } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import Modal from 'react-native-modal';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
-import { addPresence, isAlreadyPresent, memberExists } from '../database/db';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { addPresence, isAlreadyPresent, memberExists, getDates } from '../database/db';
+import { RootStackParamList } from '../types/navigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ScanPresence'>;
+type RouteProps = RouteProp<RootStackParamList, 'ScanPresence'>;
 
 const ScanPresence = () => {
-  const [facing, setFacing] = useState<CameraType>('back');
-  const [isDateModalVisible, setDateModalVisible] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProps>();
+  const { groupId } = route.params;
 
+  const [facing, setFacing] = useState<CameraType>('back');
+
+
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+
+  const [isDateModalVisible, setDateModalVisible] = useState(true);
+  const [isAlertVisible, setAlertVisible] = useState(false);
   const [isScanConfirmVisible, setScanConfirmVisible] = useState(false);
+
   const [scannedData, setScannedData] = useState<string | null>(null);
   const [scannedList, setScannedList] = useState<string[]>([]);
 
   const [permission, requestPermission] = useCameraPermissions();
-  const navigation = useNavigation();
-
   const cameraRef = useRef(null);
+
+  useFocusEffect(
+  useCallback(() => {
+    const dates = getDates(groupId);
+    setAvailableDates(dates);
+    if (dates.length > 0) {
+      setAlertVisible(false);
+      setSelectedDate(dates[0]);
+    } else {
+      setAlertVisible(true);
+      setDateModalVisible(false);
+      Alert.alert(
+        'Aucune date disponible',
+        'Veuillez ajouter une date avant de scanner.',
+        [
+          {
+            text: 'Fermer',
+            style: 'destructive',
+            onPress: () => {
+              setAlertVisible(false);
+              navigation.goBack();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  }, [groupId])
+);
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -26,10 +67,69 @@ const ScanPresence = () => {
     }
   }, [permission]);
 
-  if (!permission) {
-    return <View />;
-  }
+  const toggleCameraFacing = () => {
+    setFacing(prev => (prev === 'back' ? 'front' : 'back'));
+  };
 
+  const handleBarCodeScanned = ({ data }: { data: string }) => {
+  if (!selectedDate) return;
+
+  try {
+    if (!memberExists(data)) {
+      setAlertVisible(true);
+      Alert.alert('Erreur', 'QR code invalide : membre non trouvé.', [
+        {
+          text: 'Fermer',
+          style: 'destructive',
+          onPress: () => setAlertVisible(false),
+        },
+      ]);
+      return;
+    }
+
+    if (isAlreadyPresent(data, selectedDate)) {
+      setAlertVisible(true);
+      Alert.alert('Info', 'Ce membre a déjà été scanné pour cette date.', [
+        {
+          text: 'Fermer',
+          style: 'default',
+          onPress: () => setAlertVisible(false),
+        },
+      ]);
+      return;
+    }
+
+    addPresence(data, selectedDate);
+    setScannedList(prev => [...prev, data]);
+    setScannedData(data);
+    setScanConfirmVisible(true);
+  } catch (error) {
+    setAlertVisible(true);
+    Alert.alert('Erreur', 'Une erreur est survenue pendant le scan.', [
+      {
+        text: 'Fermer',
+        style: 'destructive',
+        onPress: () => setAlertVisible(false),
+      },
+    ]);
+  }
+};  
+
+  const confirmScan = () => {
+    setScannedData(null);
+    setScanConfirmVisible(false);
+  };
+
+  const handleDone = () => {
+    navigation.goBack();
+  };
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+    setDateModalVisible(false);
+  };
+
+  if (!permission) return <View />;
   if (!permission.granted) {
     return (
       <View style={styles.container}>
@@ -39,91 +139,48 @@ const ScanPresence = () => {
     );
   }
 
-  const toggleCameraFacing = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  };
-
-  const handleBarCodeScanned = ({ data }: { data: string }) => {
-    const today = selectedDate.toISOString().split('T')[0];
-
-    try {
-      const exists = memberExists(data);
-      if (!exists) {
-        Alert.alert('Erreur', 'QR code invalide : membre non trouvé.');
-        return;
-      }
-
-      const alreadyPresent = isAlreadyPresent(data, today);
-      if (alreadyPresent) {
-        Alert.alert('Info', 'Ce membre a déjà été scanné pour cette date.');
-        return;
-      }
-
-      addPresence(data, today);
-      setScannedList(prev => [...prev, data]);
-      setScannedData(data);
-      setScanConfirmVisible(true);
-    } catch (error) {
-      Alert.alert('Erreur', 'Une erreur est survenue pendant le scan.');
-    }
-  };
-
-
-  const confirmScan = () => {
-    if (scannedData) {
-      setScannedList(prev => [...prev, scannedData]);
-      setScannedData(null);
-      setScanConfirmVisible(false);
-    }
-  };
-
-  const handleDone = () => {
-    // TODO: enregistrer scannedList + selectedDate en base si besoin
-    navigation.goBack();
-  };
-
-  const onDateChange = (event: any, date?: Date) => {
-    if (date) setSelectedDate(date);
-    setDateModalVisible(false);
-  };
-
   return (
     <View style={styles.container}>
-      <Modal isVisible={isDateModalVisible} backdropOpacity={0.6}>
+      <Modal isVisible={isDateModalVisible}>
         <View style={styles.modal}>
-          <Text>Choisir une date :</Text>
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="calendar"
-            onChange={onDateChange}
+          <Text style={styles.modalTitle}>Choisir une date :</Text>
+          <FlatList
+            data={availableDates}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleDateSelect(item)}>
+                <Text style={styles.dateItem}>{item}</Text>
+              </TouchableOpacity>
+            )}
           />
+          <Button title="Retour" onPress={() => navigation.goBack()} />
         </View>
       </Modal>
 
-      <CameraView
-        style={styles.camera}
-        facing={facing}
-        ref={cameraRef}
-        onBarcodeScanned={handleBarCodeScanned}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Changer caméra</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
-
-      <Modal isVisible={isScanConfirmVisible} backdropOpacity={0.6}>
+      {!isAlertVisible && !isDateModalVisible && !isScanConfirmVisible &&
+        <CameraView
+          style={styles.camera}
+          facing={facing}
+          ref={cameraRef}
+          onBarcodeScanned={handleBarCodeScanned}
+        >
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Changer caméra</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleDone}>
+              <Text style={styles.text}>Terminé</Text>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      }
+      <Modal isVisible={isScanConfirmVisible}>
         <View style={styles.modal}>
-          <Text>Donnée scannée : {scannedData}</Text>
+          <Text>Scanné : {scannedData}</Text>
           <Button title="Confirmer" onPress={confirmScan} />
         </View>
       </Modal>
 
-      <View style={styles.footer}>
-        <Button title="Terminé" onPress={handleDone} />
-      </View>
     </View>
   );
 };
@@ -135,6 +192,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
+    flexDirection: 'row', 
+    gap: 12, 
   },
   button: {
     paddingVertical: 8,
@@ -147,10 +206,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   modal: {
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 12,
     alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  dateItem: {
+    padding: 12,
+    fontSize: 16,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    width: 200,
+    textAlign: 'center',
   },
   footer: {
     padding: 16,

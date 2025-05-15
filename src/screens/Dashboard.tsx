@@ -4,7 +4,7 @@ import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navig
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Member } from '../types/models';
-import { getMembers, getPresenceMap } from '../database/db';
+import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
 import { useLogNavigationStack } from '../utils/hooks';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const data = getMembers(groupId);
+      const data = getMembersByGroup(groupId);
       if (data.length === 0) {
         navigation.navigate('AddMember', { groupId });
         return;
@@ -36,7 +36,7 @@ const Dashboard = () => {
 
       // You may want to compute all unique dates dynamically from presence
       const uniqueDates = Array.from(new Set(Object.values(presence).flat()));
-      setDates(uniqueDates.sort());
+      setDates(getDates(groupId));
     }, [groupId])
   );
 
@@ -47,9 +47,14 @@ const Dashboard = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Button title="Take manually" onPress={() => {}} />
         <Button title="Scan Presence" onPress={() => navigation.navigate('ScanPresence', { groupId })} />
+        <Button title="Add Date" onPress={() => {
+          const newDate = new Date().toISOString().split('T')[0];
+          addDate(groupId, newDate);
+          setDates(getDates(groupId));
+        }} />
       </View>
+
 
       <ScrollView horizontal>
         <View>
@@ -71,7 +76,7 @@ const Dashboard = () => {
                     const present = presenceMap[item.id]?.includes(date);
                     return (
                       <Text key={index} style={styles.cell}>
-                        {present ? '✔️' : ''}
+                        {present ? '✔️' : '❌'}
                       </Text>
                     );
                   })}
