@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { addGroup, getMembersByGroup } from '../database/db';
+import { addGroup, getMembers } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
-import { useLogNavigationStack } from '../utils/hooks';
 
 type AddGroupNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddGroup'>;
 
-const AddGroup = () => {
-  useLogNavigationStack();
-
+export default function AddGroup() {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const navigation = useNavigation<AddGroupNavigationProp>();
@@ -24,9 +21,14 @@ const AddGroup = () => {
     };
 
     addGroup(newGroup.id, newGroup.name, newGroup.location);
-    
-    navigation.replace('Dashboard', { groupId: newGroup.id });
-    
+
+    const members = getMembers(newGroup.id);
+
+    if (members.length === 0) {
+      navigation.navigate('AddMember', { groupId: newGroup.id });
+    } else {
+      navigation.navigate('Dashboard', { groupId: newGroup.id });
+    }
   };
 
   return (
@@ -65,5 +67,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
-
-export default AddGroup;
