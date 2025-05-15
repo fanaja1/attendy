@@ -4,7 +4,7 @@ import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navig
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Member } from '../types/models';
-import { getMembers } from '../database/db';
+import { getMembers, getPresenceMap } from '../database/db';
 import { useLogNavigationStack } from '../utils/hooks';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
@@ -19,6 +19,7 @@ const Dashboard = () => {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<string[]>([]);
+  const [presenceMap, setPresenceMap] = useState<Record<string, string[]>>({});
 
   useFocusEffect(
     useCallback(() => {
@@ -27,8 +28,15 @@ const Dashboard = () => {
         navigation.navigate('AddMember', { groupId });
         return;
       }
+
+      const presence = getPresenceMap(groupId);
+
       setMembers(data);
-      setDates(['2025-05-01', '2025-05-05', '2025-05-10']);
+      setPresenceMap(presence);
+
+      // You may want to compute all unique dates dynamically from presence
+      const uniqueDates = Array.from(new Set(Object.values(presence).flat()));
+      setDates(uniqueDates.sort());
     }, [groupId])
   );
 
@@ -59,9 +67,14 @@ const Dashboard = () => {
               <TouchableOpacity onPress={() => handlePressMember(item.id)}>
                 <View style={styles.tableRow}>
                   <Text style={styles.cell}>{item.name}</Text>
-                  {dates.map((_, index) => (
-                    <Text key={index} style={styles.cell}></Text>
-                  ))}
+                  {dates.map((date, index) => {
+                    const present = presenceMap[item.id]?.includes(date);
+                    return (
+                      <Text key={index} style={styles.cell}>
+                        {present ? '✔️' : ''}
+                      </Text>
+                    );
+                  })}
                 </View>
               </TouchableOpacity>
             )}
@@ -74,7 +87,7 @@ const Dashboard = () => {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

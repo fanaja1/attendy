@@ -34,7 +34,7 @@ export const MemberInfo = () => {
       <Text style={styles.title}>{member.name}</Text>
       <Text style={styles.subtitle}>ID: {member.id}</Text>
       <View style={styles.qrCode}>
-        <QRCodeCustom />
+        <QRCodeCustom value={member.id} />
       </View>
     </View>
   );

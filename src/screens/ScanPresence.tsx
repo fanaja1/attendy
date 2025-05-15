@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
+import { addPresence, isAlreadyPresent, memberExists } from '../database/db';
 
 const ScanPresence = () => {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -43,11 +44,30 @@ const ScanPresence = () => {
   };
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
-    if (!scannedList.includes(data)) {
+    const today = selectedDate.toISOString().split('T')[0];
+
+    try {
+      const exists = memberExists(data);
+      if (!exists) {
+        Alert.alert('Erreur', 'QR code invalide : membre non trouvé.');
+        return;
+      }
+
+      const alreadyPresent = isAlreadyPresent(data, today);
+      if (alreadyPresent) {
+        Alert.alert('Info', 'Ce membre a déjà été scanné pour cette date.');
+        return;
+      }
+
+      addPresence(data, today);
+      setScannedList(prev => [...prev, data]);
       setScannedData(data);
       setScanConfirmVisible(true);
+    } catch (error) {
+      Alert.alert('Erreur', 'Une erreur est survenue pendant le scan.');
     }
   };
+
 
   const confirmScan = () => {
     if (scannedData) {

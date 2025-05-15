@@ -4,10 +4,9 @@ import QRCodeStyled from 'react-native-qrcode-styled';
 
 interface QRCodeCustomProps {
   value: string;
-  size: number;
 }
 
-const QRCodeCustom: React.FC<QRCodeCustomProps> = ({ value, size }) => {
+const QRCodeCustom: React.FC<QRCodeCustomProps> = ({ value }) => {
   return (
     <View style={styles.container}>
       <QRCodeStyled
@@ -15,11 +14,9 @@ const QRCodeCustom: React.FC<QRCodeCustomProps> = ({ value, size }) => {
         style={{ backgroundColor: 'white' }}
         padding={10}
         pieceSize={10}
-        pieceBorderRadius={2}
         pieceStroke=''
         errorCorrectionLevel="H"
         color="black"
-        // size={size} // Utilisez la taille définie en props
       />
     </View>
   );
@@ -94,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomEyes;
+export default QRCodeCustom;
