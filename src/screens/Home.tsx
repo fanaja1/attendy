@@ -3,8 +3,7 @@ import { View, Text, Button } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { setupDatabase, getGroups } from '../database/db';
 import { useLogNavigationStack } from '../utils/hooks';
-
-import * as FileSystem from 'expo-file-system'; // Ajoute ceci en haut
+import * as FileSystem from 'expo-file-system';
 
 type Props = NativeStackScreenProps<any, 'Home'>;
 
