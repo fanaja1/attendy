@@ -162,16 +162,12 @@ const Dashboard = () => {
           <View style={styles.tableRow}>
             <Text style={[styles.cell, styles.headerCell]}>Name</Text>
             {(() => {
-              // Regrouper les dates par date sans heure
               const dateCounts: Record<string, number> = {};
-              const dateLabels: string[] = [];
               dates.forEach((dateEntry) => {
                 const dateOnly = dateEntry.value.slice(0, 10);
                 dateCounts[dateOnly] = (dateCounts[dateOnly] || 0) + 1;
-                dateLabels.push(dateOnly);
               });
 
-              // Pour chaque dateEntry, afficher la date sans heure, et si plusieurs fois, ajouter (1), (2), etc.
               const dateSeen: Record<string, number> = {};
               return dates.map((dateEntry, index) => {
                 const dateOnly = dateEntry.value.slice(0, 10);
@@ -181,9 +177,14 @@ const Dashboard = () => {
                   label += ` (${dateSeen[dateOnly]})`;
                 }
                 return (
-                  <Text key={index} style={[styles.cell, styles.headerCell]}>
-                    {label}
-                  </Text>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => navigation.navigate('InformationsDate', { groupId, dateEntry })}
+                  >
+                    <Text style={[styles.cell, styles.headerCell]}>
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
                 );
               });
             })()}
