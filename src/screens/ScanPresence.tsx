@@ -7,6 +7,7 @@ import { addPresence, isAlreadyPresent, memberExists, getDates } from '../databa
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import { DateEntry } from '../types/models';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ScanPresence'>;
 type RouteProps = RouteProp<RootStackParamList, 'ScanPresence'>;
@@ -19,8 +20,8 @@ const ScanPresence = () => {
   const [facing, setFacing] = useState<CameraType>('back');
 
 
-  const [selectedDate, setSelectedDate] = useState<string>('');
-  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<DateEntry | null>(null);
+  const [availableDates, setAvailableDates] = useState<DateEntry[]>([]);
 
   const [isDateModalVisible, setDateModalVisible] = useState(true);
   const [isAlertVisible, setAlertVisible] = useState(false);
@@ -33,33 +34,33 @@ const ScanPresence = () => {
   const cameraRef = useRef(null);
 
   useFocusEffect(
-  useCallback(() => {
-    const dates = getDates(groupId);
-    setAvailableDates(dates);
-    if (dates.length > 0) {
-      setAlertVisible(false);
-      setSelectedDate(dates[0]);
-    } else {
-      setAlertVisible(true);
-      setDateModalVisible(false);
-      Alert.alert(
-        'Aucune date disponible',
-        'Veuillez ajouter une date avant de scanner.',
-        [
-          {
-            text: 'Fermer',
-            style: 'destructive',
-            onPress: () => {
-              setAlertVisible(false);
-              navigation.goBack();
+    useCallback(() => {
+      const dates = getDates(groupId); // getDates retourne maintenant DateEntry[]
+      setAvailableDates(dates);
+      if (dates.length > 0) {
+        setAlertVisible(false);
+        setSelectedDate(dates[0]);
+      } else {
+        setAlertVisible(true);
+        setDateModalVisible(false);
+        Alert.alert(
+          'Aucune date disponible',
+          'Veuillez ajouter une date avant de scanner.',
+          [
+            {
+              text: 'Fermer',
+              style: 'destructive',
+              onPress: () => {
+                setAlertVisible(false);
+                navigation.goBack();
+              },
             },
-          },
-        ],
-        { cancelable: false }
-      );
-    }
-  }, [groupId])
-);
+          ],
+          { cancelable: false }
+        );
+      }
+    }, [groupId])
+  );
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -72,48 +73,48 @@ const ScanPresence = () => {
   };
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
-  if (!selectedDate) return;
+    if (!selectedDate) return;
 
-  try {
-    if (!memberExists(data)) {
+    try {
+      if (!memberExists(data)) {
+        setAlertVisible(true);
+        Alert.alert('Erreur', 'QR code invalide : membre non trouvé.', [
+          {
+            text: 'Fermer',
+            style: 'destructive',
+            onPress: () => setAlertVisible(false),
+          },
+        ]);
+        return;
+      }
+
+      if (isAlreadyPresent(data, selectedDate.value)) {
+        setAlertVisible(true);
+        Alert.alert('Info', 'Ce membre a déjà été scanné pour cette date.', [
+          {
+            text: 'Fermer',
+            style: 'default',
+            onPress: () => setAlertVisible(false),
+          },
+        ]);
+        return;
+      }
+
+      addPresence(data, selectedDate.value);
+      setScannedList(prev => [...prev, data]);
+      setScannedData(data);
+      setScanConfirmVisible(true);
+    } catch (error) {
       setAlertVisible(true);
-      Alert.alert('Erreur', 'QR code invalide : membre non trouvé.', [
+      Alert.alert('Erreur', 'Une erreur est survenue pendant le scan.', [
         {
           text: 'Fermer',
           style: 'destructive',
           onPress: () => setAlertVisible(false),
         },
       ]);
-      return;
     }
-
-    if (isAlreadyPresent(data, selectedDate)) {
-      setAlertVisible(true);
-      Alert.alert('Info', 'Ce membre a déjà été scanné pour cette date.', [
-        {
-          text: 'Fermer',
-          style: 'default',
-          onPress: () => setAlertVisible(false),
-        },
-      ]);
-      return;
-    }
-
-    addPresence(data, selectedDate);
-    setScannedList(prev => [...prev, data]);
-    setScannedData(data);
-    setScanConfirmVisible(true);
-  } catch (error) {
-    setAlertVisible(true);
-    Alert.alert('Erreur', 'Une erreur est survenue pendant le scan.', [
-      {
-        text: 'Fermer',
-        style: 'destructive',
-        onPress: () => setAlertVisible(false),
-      },
-    ]);
-  }
-};  
+  };
 
   const confirmScan = () => {
     setScannedData(null);
@@ -124,7 +125,7 @@ const ScanPresence = () => {
     navigation.goBack();
   };
 
-  const handleDateSelect = (date: string) => {
+  const handleDateSelect = (date: DateEntry) => {
     setSelectedDate(date);
     setDateModalVisible(false);
   };
@@ -146,12 +147,21 @@ const ScanPresence = () => {
           <Text style={styles.modalTitle}>Choisir une date :</Text>
           <FlatList
             data={availableDates}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleDateSelect(item)}>
-                <Text style={styles.dateItem}>{item}</Text>
-              </TouchableOpacity>
-            )}
+            keyExtractor={(_, idx) => idx.toString()}
+            renderItem={({ item }) => {
+              let label = item.value;
+              if (item.startTime && item.endTime) {
+                label += `\n${item.startTime}-${item.endTime}`;
+                if (item.tolerance > 0) {
+                  label += ` (tolérance: ${item.tolerance}m)`;
+                }
+              }
+              return (
+                <TouchableOpacity onPress={() => handleDateSelect(item)}>
+                  <Text style={styles.dateItem}>{label}</Text>
+                </TouchableOpacity>
+              );
+            }}
           />
           <Button title="Retour" onPress={() => navigation.goBack()} />
         </View>
@@ -192,8 +202,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
-    flexDirection: 'row', 
-    gap: 12, 
+    flexDirection: 'row',
+    gap: 12,
   },
   button: {
     paddingVertical: 8,
