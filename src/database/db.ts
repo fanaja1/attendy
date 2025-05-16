@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { Group, Member } from '../types/models';
+import { DateEntry, Group, Member } from '../types/models';
 
 const db = SQLite.openDatabaseSync('attendy.db');
 
@@ -27,6 +27,9 @@ export const setupDatabase = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         groupId TEXT NOT NULL,
         value TEXT NOT NULL,
+        startTime TEXT DEFAULT NULL,
+        endTime TEXT DEFAULT NULL,
+        tolerance INTEGER DEFAULT 0,
         FOREIGN KEY (groupId) REFERENCES groupes(id)
       );
     `);
@@ -124,18 +127,30 @@ export const memberExists = (id: string): boolean => {
   }
 };
 
-export const addDate = (groupId: string, value: string) => {
+export const addDate = (
+  groupId: string,
+  value: string,
+  startTime: string | null = null,
+  endTime: string | null = null,
+  tolerance: number = 0
+) => {
   try {
-    db.runSync('INSERT INTO dates (groupId, value) VALUES (?, ?)', [groupId, value]);
+    db.runSync(
+      'INSERT INTO dates (groupId, value, startTime, endTime, tolerance) VALUES (?, ?, ?, ?, ?)',
+      [groupId, value, startTime, endTime, tolerance]
+    );
   } catch (error) {
     console.error('Error adding date:', error);
   }
 };
 
-export const getDates = (groupId: string): string[] => {
+export const getDates = (groupId: string): DateEntry[] => {
   try {
-    const result = db.getAllSync('SELECT value FROM dates WHERE groupId = ?', [groupId]) as { value: string }[];
-    return result.map(d => d.value);
+    const result = db.getAllSync(
+      'SELECT value, startTime, endTime, tolerance FROM dates WHERE groupId = ?',
+      [groupId]
+    ) as DateEntry[];
+    return result;
   } catch (error) {
     console.error('Error fetching dates:', error);
     return [];

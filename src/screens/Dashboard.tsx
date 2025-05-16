@@ -3,7 +3,7 @@ import { View, Text, Button, FlatList, ScrollView, StyleSheet, TouchableOpacity,
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { Member } from '../types/models';
+import { DateEntry, Member } from '../types/models';
 import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
@@ -19,7 +19,7 @@ const Dashboard = () => {
   const { groupId } = route.params;
 
   const [members, setMembers] = useState<Member[]>([]);
-  const [dates, setDates] = useState<string[]>([]);
+  const [dates, setDates] = useState<DateEntry[]>([]);
   const [presenceMap, setPresenceMap] = useState<Record<string, string[]>>({});
 
   const [showModal, setShowModal] = useState(false);
@@ -55,6 +55,34 @@ const Dashboard = () => {
   const handlePressMember = (memberId: string) => {
     navigation.navigate('MemberInfo', { memberId });
   };
+
+  const handleSaveDate = () => {
+    let dateStr = selectedDate.toISOString().slice(0, 10);
+    if (useTime) {
+      const start = startTime.toTimeString().slice(0, 5);
+      const end = endTime.toTimeString().slice(0, 5);
+      dateStr += ` ${start}-${end}`;
+      if (tolerance) {
+        dateStr += ` (tolérance: ${tolerance}min)`;
+      }
+    }
+
+    addDate(
+      groupId,
+      dateStr, // ta date principale
+      useTime ? startTime.toTimeString().slice(0, 5) : null,
+      useTime ? endTime.toTimeString().slice(0, 5) : null,
+      useTime && tolerance ? parseInt(tolerance, 10) : 0
+    );
+
+    setDates(getDates(groupId));
+
+    setShowModal(false);
+
+    setUseTime(false);
+    setTolerance('');
+  };
+
 
   return (
     <View style={styles.container}>
@@ -119,8 +147,7 @@ const Dashboard = () => {
             </>
           )}
 
-          <Button title="Valider" />
-          {/* onPress={handleSaveDate} /> */}
+          <Button title="Valider" onPress={handleSaveDate} />
         </View>
       </Modal>
 
@@ -134,9 +161,20 @@ const Dashboard = () => {
         <View>
           <View style={styles.tableRow}>
             <Text style={[styles.cell, styles.headerCell]}>Name</Text>
-            {dates.map((date, index) => (
-              <Text key={index} style={[styles.cell, styles.headerCell]}>{date}</Text>
-            ))}
+            {dates.map((dateEntry, index) => {
+              let label = dateEntry.value;
+              if (dateEntry.startTime && dateEntry.endTime) {
+                label += `\n${dateEntry.startTime}-${dateEntry.endTime}`;
+                if (dateEntry.tolerance > 0) {
+                  label += ` (tolérance: ${dateEntry.tolerance}m)`;
+                }
+              }
+              return (
+                <Text key={index} style={[styles.cell, styles.headerCell]}>
+                  {label}
+                </Text>
+              );
+            })}
           </View>
 
           <FlatList
@@ -146,8 +184,8 @@ const Dashboard = () => {
               <TouchableOpacity onPress={() => handlePressMember(item.id)}>
                 <View style={styles.tableRow}>
                   <Text style={styles.cell}>{item.name}</Text>
-                  {dates.map((date, index) => {
-                    const present = presenceMap[item.id]?.includes(date);
+                  {dates.map((dateEntry, index) => {
+                    const present = presenceMap[item.id]?.includes(dateEntry.value);
                     return (
                       <Text key={index} style={styles.cell}>
                         {present ? '✔️' : '❌'}
