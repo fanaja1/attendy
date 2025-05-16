@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Button, FlatList, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, FlatList, ScrollView, StyleSheet, TouchableOpacity, Modal, Switch, TextInput } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Member } from '../types/models';
 import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
@@ -20,6 +21,17 @@ const Dashboard = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const [presenceMap, setPresenceMap] = useState<Record<string, string[]>>({});
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [useTime, setUseTime] = useState(false);
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
+  const [tolerance, setTolerance] = useState('');
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -46,13 +58,75 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
+      <Modal visible={showModal} transparent>
+        <View style={styles.modalContainer}>
+          <Text>Choisir une date :</Text>
+          <Button title="Sélectionner une date" onPress={() => setShowDatePicker(true)} />
+          {showDatePicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default"
+              onChange={(e, date) => {
+                if (date) setSelectedDate(date);
+                setShowDatePicker(false);
+              }}
+            />
+          )}
+
+          <View style={styles.row}>
+            <Text>Utiliser l’heure</Text>
+            <Switch value={useTime} onValueChange={setUseTime} />
+          </View>
+
+          {useTime && (
+            <>
+              <Text>Heure de début :</Text>
+              <Button title="Choisir" onPress={() => setShowStartTimePicker(true)} />
+              {showStartTimePicker && (
+                <DateTimePicker
+                  value={startTime}
+                  mode="time"
+                  display="default"
+                  onChange={(e, time) => {
+                    if (time) setStartTime(time);
+                    setShowStartTimePicker(false);
+                  }}
+                />
+              )}
+
+              <Text>Heure de fin :</Text>
+              <Button title="Choisir" onPress={() => setShowEndTimePicker(true)} />
+              {showEndTimePicker && (
+                <DateTimePicker
+                  value={endTime}
+                  mode="time"
+                  display="default"
+                  onChange={(e, time) => {
+                    if (time) setEndTime(time);
+                    setShowEndTimePicker(false);
+                  }}
+                />
+              )}
+
+              <Text>Tolérance (minutes) :</Text>
+              <TextInput
+                keyboardType="numeric"
+                value={tolerance}
+                onChangeText={setTolerance}
+                style={styles.input}
+              />
+            </>
+          )}
+
+          <Button title="Valider" />
+          {/* onPress={handleSaveDate} /> */}
+        </View>
+      </Modal>
+
       <View style={styles.header}>
         <Button title="Scan Presence" onPress={() => navigation.navigate('ScanPresence', { groupId })} />
-        <Button title="Add Date" onPress={() => {
-          const newDate = new Date().toISOString().split('T')[0];
-          addDate(groupId, newDate);
-          setDates(getDates(groupId));
-        }} />
+        <Button title="Add Date" onPress={() => setShowModal(true)} />
       </View>
 
 
@@ -126,6 +200,35 @@ const styles = StyleSheet.create({
   headerCell: {
     fontWeight: 'bold',
     backgroundColor: '#eee',
+  },
+  // Styles ajoutés :
+  modalContainer: {
+    backgroundColor: 'white',
+    margin: 32,
+    padding: 24,
+    borderRadius: 12,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    alignItems: 'stretch',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 12,
+    justifyContent: 'space-between',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 8,
+    marginVertical: 8,
+    width: 80,
+    alignSelf: 'flex-start',
+    backgroundColor: '#fff',
   },
 });
 
