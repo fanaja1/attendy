@@ -161,20 +161,32 @@ const Dashboard = () => {
         <View>
           <View style={styles.tableRow}>
             <Text style={[styles.cell, styles.headerCell]}>Name</Text>
-            {dates.map((dateEntry, index) => {
-              let label = dateEntry.value;
-              if (dateEntry.startTime && dateEntry.endTime) {
-                label += `\n${dateEntry.startTime}-${dateEntry.endTime}`;
-                if (dateEntry.tolerance > 0) {
-                  label += ` (tolérance: ${dateEntry.tolerance}m)`;
+            {(() => {
+              // Regrouper les dates par date sans heure
+              const dateCounts: Record<string, number> = {};
+              const dateLabels: string[] = [];
+              dates.forEach((dateEntry) => {
+                const dateOnly = dateEntry.value.slice(0, 10);
+                dateCounts[dateOnly] = (dateCounts[dateOnly] || 0) + 1;
+                dateLabels.push(dateOnly);
+              });
+
+              // Pour chaque dateEntry, afficher la date sans heure, et si plusieurs fois, ajouter (1), (2), etc.
+              const dateSeen: Record<string, number> = {};
+              return dates.map((dateEntry, index) => {
+                const dateOnly = dateEntry.value.slice(0, 10);
+                dateSeen[dateOnly] = (dateSeen[dateOnly] || 0) + 1;
+                let label = dateOnly;
+                if (dateCounts[dateOnly] > 1) {
+                  label += ` (${dateSeen[dateOnly]})`;
                 }
-              }
-              return (
-                <Text key={index} style={[styles.cell, styles.headerCell]}>
-                  {label}
-                </Text>
-              );
-            })}
+                return (
+                  <Text key={index} style={[styles.cell, styles.headerCell]}>
+                    {label}
+                  </Text>
+                );
+              });
+            })()}
           </View>
 
           <FlatList
