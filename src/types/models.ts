@@ -11,6 +11,7 @@ export interface Member {
 };
 
 export interface DateEntry {
+  id: string;
   value: string; // ex: '2024-05-16'
   startTime: string | null; // ex: '08:00' ou null si non utilisé
   endTime: string | null;   // ex: '10:00' ou null si non utilisé

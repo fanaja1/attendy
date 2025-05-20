@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<DateEntry[]>([]);
-  const [presenceMap, setPresenceMap] = useState<Record<string, string[]>>({});
+  const [presenceMap, setPresenceMap] = useState<Record<string, { date: string, status: string, retardMinutes: number }[]>>({});
 
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -45,9 +45,6 @@ const Dashboard = () => {
 
       setMembers(data);
       setPresenceMap(presence);
-
-      // You may want to compute all unique dates dynamically from presence
-      const uniqueDates = Array.from(new Set(Object.values(presence).flat()));
       setDates(getDates(groupId));
     }, [groupId])
   );
@@ -198,10 +195,18 @@ const Dashboard = () => {
                 <View style={styles.tableRow}>
                   <Text style={styles.cell}>{item.name}</Text>
                   {dates.map((dateEntry, index) => {
-                    const present = presenceMap[item.id]?.includes(dateEntry.value);
+                    // Cherche la présence pour ce membre et cette date
+                    const presence = presenceMap[item.id]?.find(p => p.date === dateEntry.value);
+                    let symbol = '❌';
+                    if (presence) {
+                      if (presence.status === 'present') symbol = '✔️';
+                      else if (presence.status === 'retard') symbol = `⏰${presence.retardMinutes}`;
+                      else if (presence.status === 'permission') symbol = '📝';
+                      else if (presence.status === 'absent') symbol = '❌';
+                    }
                     return (
                       <Text key={index} style={styles.cell}>
-                        {present ? '✔️' : '❌'}
+                        {symbol}
                       </Text>
                     );
                   })}
