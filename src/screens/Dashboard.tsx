@@ -3,7 +3,7 @@ import { View, Text, Button, FlatList, ScrollView, StyleSheet, TouchableOpacity,
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { DateEntry, Member } from '../types/models';
+import { DateEntry, Member, Presence } from '../types/models';
 import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<DateEntry[]>([]);
-  const [presenceMap, setPresenceMap] = useState<Record<string, { date: string, status: string, retardMinutes: number }[]>>({});
+const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
 
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());

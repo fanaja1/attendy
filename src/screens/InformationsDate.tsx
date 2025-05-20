@@ -3,7 +3,7 @@ import { View, Text, Button, Modal, FlatList, TouchableOpacity, TextInput } from
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
 import { DateEntry, Member } from '../types/models';
-import { getMembersByGroup, getPresenceMap, addPresence, updateDate, setPresence } from '../database/db';
+import { getMembersByGroup, getPresenceMap, updateDate, setPresence } from '../database/db';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 type InformationsDateRouteProp = RouteProp<RootStackParamList, 'InformationsDate'>;

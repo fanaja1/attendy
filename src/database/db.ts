@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { DateEntry, Group, Member } from '../types/models';
+import { DateEntry, Group, Member, Presence, Status, STATUS_VALUES } from '../types/models';
 
 const db = SQLite.openDatabaseSync('attendy.db');
 
@@ -48,8 +48,8 @@ export const setupDatabase = () => {
     `);
 
     // Pour migration si la table existe déjà sans les colonnes :
-    try { db.execSync(`ALTER TABLE presences ADD COLUMN status TEXT DEFAULT 'present';`); } catch {}
-    try { db.execSync(`ALTER TABLE presences ADD COLUMN retardMinutes INTEGER DEFAULT 0;`); } catch {}
+    try { db.execSync(`ALTER TABLE presences ADD COLUMN status TEXT DEFAULT 'present';`); } catch { }
+    try { db.execSync(`ALTER TABLE presences ADD COLUMN retardMinutes INTEGER DEFAULT 0;`); } catch { }
 
     console.log('Database setup complete');
   } catch (error) {
@@ -204,7 +204,7 @@ export const addPresence = (memberId: string, date: string): void => {
   }
 };
 
-export const getPresenceMap = (groupId: string): Record<string, { date: string, status: string, retardMinutes: number }[]> => {
+export const getPresenceMap = (groupId: string): Record<string, Presence[]> => {
   try {
     const rows = db.getAllSync(`
       SELECT d.value AS date, p.memberId, p.status, p.retardMinutes
@@ -214,10 +214,11 @@ export const getPresenceMap = (groupId: string): Record<string, { date: string, 
       WHERE m.groupId = ?
     `, [groupId]) as { date: string; memberId: string; status: string; retardMinutes: number }[];
 
-    const map: Record<string, { date: string, status: string, retardMinutes: number }[]> = {};
+    const map: Record<string, Presence[]> = {};
     for (const row of rows) {
       if (!map[row.memberId]) map[row.memberId] = [];
-      map[row.memberId].push({ date: row.date, status: row.status, retardMinutes: row.retardMinutes });
+      const status: Status = STATUS_VALUES.includes(row.status as Status) ? row.status as Status : 'present';
+      map[row.memberId].push({ date: row.date, status, retardMinutes: row.retardMinutes });
     }
 
     return map;
