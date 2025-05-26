@@ -6,13 +6,24 @@ export interface Group {
 }
 
 export interface Member {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 };
 
 export interface DateEntry {
+  id: string;
   value: string; // ex: '2024-05-16'
   startTime: string | null; // ex: '08:00' ou null si non utilisé
   endTime: string | null;   // ex: '10:00' ou null si non utilisé
   tolerance: number;        // en minutes, 0 si non utilisé
-};
+}
+
+export const STATUS_VALUES = ['present', 'absent', 'retard', 'permission'];
+
+export type Status = (typeof STATUS_VALUES)[number];
+
+export interface Presence {
+  date: string;
+  status: Status;
+  retardMinutes: number;
+}

@@ -3,7 +3,7 @@ import { View, Text, Button, FlatList, ScrollView, StyleSheet, TouchableOpacity,
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { DateEntry, Member } from '../types/models';
+import { DateEntry, Member, Presence } from '../types/models';
 import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<DateEntry[]>([]);
-  const [presenceMap, setPresenceMap] = useState<Record<string, string[]>>({});
+const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
 
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -45,9 +45,6 @@ const Dashboard = () => {
 
       setMembers(data);
       setPresenceMap(presence);
-
-      // You may want to compute all unique dates dynamically from presence
-      const uniqueDates = Array.from(new Set(Object.values(presence).flat()));
       setDates(getDates(groupId));
     }, [groupId])
   );
@@ -162,16 +159,12 @@ const Dashboard = () => {
           <View style={styles.tableRow}>
             <Text style={[styles.cell, styles.headerCell]}>Name</Text>
             {(() => {
-              // Regrouper les dates par date sans heure
               const dateCounts: Record<string, number> = {};
-              const dateLabels: string[] = [];
               dates.forEach((dateEntry) => {
                 const dateOnly = dateEntry.value.slice(0, 10);
                 dateCounts[dateOnly] = (dateCounts[dateOnly] || 0) + 1;
-                dateLabels.push(dateOnly);
               });
 
-              // Pour chaque dateEntry, afficher la date sans heure, et si plusieurs fois, ajouter (1), (2), etc.
               const dateSeen: Record<string, number> = {};
               return dates.map((dateEntry, index) => {
                 const dateOnly = dateEntry.value.slice(0, 10);
@@ -181,9 +174,14 @@ const Dashboard = () => {
                   label += ` (${dateSeen[dateOnly]})`;
                 }
                 return (
-                  <Text key={index} style={[styles.cell, styles.headerCell]}>
-                    {label}
-                  </Text>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => navigation.navigate('InformationsDate', { groupId, dateEntry })}
+                  >
+                    <Text style={[styles.cell, styles.headerCell]}>
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
                 );
               });
             })()}
@@ -197,10 +195,18 @@ const Dashboard = () => {
                 <View style={styles.tableRow}>
                   <Text style={styles.cell}>{item.name}</Text>
                   {dates.map((dateEntry, index) => {
-                    const present = presenceMap[item.id]?.includes(dateEntry.value);
+                    // Cherche la présence pour ce membre et cette date
+                    const presence = presenceMap[item.id]?.find(p => p.date === dateEntry.value);
+                    let symbol = '❌';
+                    if (presence) {
+                      if (presence.status === 'present') symbol = '✔️';
+                      else if (presence.status === 'retard') symbol = `⏰${presence.retardMinutes}`;
+                      else if (presence.status === 'permission') symbol = '📝';
+                      else if (presence.status === 'absent') symbol = '❌';
+                    }
                     return (
                       <Text key={index} style={styles.cell}>
-                        {present ? '✔️' : '❌'}
+                        {symbol}
                       </Text>
                     );
                   })}
