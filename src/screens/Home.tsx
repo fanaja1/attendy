@@ -1,19 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-  Image,
-  Animated,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet, Image, Animated, } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { setupDatabase } from '../database/db';
 import { useLogNavigationStack } from '../utils/hooks';
 import * as FileSystem from 'expo-file-system';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import AppLayout from '../components/AppLayout';
 
 type Props = NativeStackScreenProps<any, 'Home'>;
 
@@ -87,51 +79,30 @@ const Home = ({ navigation }: Props) => {
     ).start();
   }, []);
 
-  const color1 = colorAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['#00C6FF', '#FFDEE9'],
-  });
-
-  const color2 = colorAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['#FFFFFF', '#B5FFFC'],
-  });
-
   return (
-    <View style={{ flex: 1 }}>
-      <View style={StyleSheet.absoluteFill}>
-        <LinearGradient
-          colors={['#00C6FF', '#FFFFFF']}
-          style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
-      </View>
-
-      <View style={styles.container}>
-        <View style={styles.settingsRow}>
-          <TouchableOpacity style={styles.settingsIconButton} onPress={handleSettings}>
-            <Ionicons name="settings-outline" size={20} color="#333" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingsTextButton} onPress={handleSettings}>
-            <Text style={styles.settingsText}>Se connecter</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Image source={require('../../assets/icon.png')} style={styles.logo} />
-        <Text style={styles.title}>Rehefa tara dia tara</Text>
-
-        <Animated.View style={[styles.animatedButton, { transform: [{ scale: scaleAnim }] }]}>
-          <TouchableOpacity style={styles.button} onPress={handleEnter}>
-            <Text style={styles.buttonText}>Entrer</Text>
-          </TouchableOpacity>
-        </Animated.View>
-
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteDb}>
-          <Text style={styles.deleteButtonText}>Supprimer la base de données</Text>
+    <AppLayout style={styles.container}>
+      <View style={styles.settingsRow}>
+        <TouchableOpacity style={styles.settingsIconButton} onPress={handleSettings}>
+          <Ionicons name="settings-outline" size={20} color="#333" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.settingsTextButton} onPress={handleSettings}>
+          <Text style={styles.settingsText}>Se connecter</Text>
         </TouchableOpacity>
       </View>
-    </View>
+
+      <Image source={require('../../assets/icon.png')} style={styles.logo} />
+      <Text style={styles.title}>Rehefa tara dia tara</Text>
+
+      <Animated.View style={[styles.animatedButton, { transform: [{ scale: scaleAnim }] }]}>
+        <TouchableOpacity style={styles.button} onPress={handleEnter}>
+          <Text style={styles.buttonText}>Entrer</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+      <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteDb}>
+        <Text style={styles.deleteButtonText}>Supprimer la base de données</Text>
+      </TouchableOpacity>
+    </AppLayout>
   );
 };
 
@@ -145,8 +116,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   logo: {
-    width: 200,
-    height: 200,
+    width: 300,
+    height: 300,
     marginTop: 20,
     marginBottom: 32,
     borderRadius: 20,
@@ -192,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    top: 40,
+    top: 10,
     right: 20,
     gap: 6,
   },

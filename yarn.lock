@@ -841,6 +841,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
+"@expo-google-fonts/poppins@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/poppins/-/poppins-0.4.0.tgz#590a6bb1b9de751e2fb79af95fc52bbf35cf4d7f"
+  integrity sha512-mY+z56ai1p01EltWCPEDc2EZR+yq7qAMpgDa+SP16j3vwETOLG3pl+W74oUhZayHw0uYdQjTXkm4ZO4QvX1I7w==
+
 "@expo/cli@0.24.11":
   version "0.24.11"
   resolved "https://registry.npmjs.org/@expo/cli/-/cli-0.24.11.tgz"
@@ -2641,7 +2646,7 @@ expo-file-system@~18.1.9:
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-18.1.9.tgz"
   integrity sha512-2i8IpaXpLVSI/dmT6TBfvRkl1+YkbWI07NCsQX1Myh33AF8xaJ4jv3Hz6WK1JArqDagCmrQUB2mW9SYnWYqLHg==
 
-expo-font@~13.3.1:
+expo-font@^13.3.1, expo-font@~13.3.1:
   version "13.3.1"
   resolved "https://registry.npmjs.org/expo-font/-/expo-font-13.3.1.tgz"
   integrity sha512-d+xrHYvSM9WB42wj8vP9OOFWyxed5R1evphfDb6zYBmC1dA9Hf89FpT7TNFtj2Bk3clTnpmVqQTCYbbA2P3CLg==
@@ -2652,11 +2657,6 @@ expo-keep-awake@~14.1.4:
   version "14.1.4"
   resolved "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-14.1.4.tgz"
   integrity sha512-wU9qOnosy4+U4z/o4h8W9PjPvcFMfZXrlUoKTMBW7F4pLqhkkP/5G4EviPZixv4XWFMjn1ExQ5rV6BX8GwJsWA==
-
-expo-linear-gradient@~14.1.4:
-  version "14.1.4"
-  resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-14.1.4.tgz#fcb2b586cfd21dd5f3076de467f92b55d9c47cb2"
-  integrity sha512-bImj2qqIjnl+VHYGnIwan9LxmGvb8e4hFqHpxsPzUiK7Ady7uERrXPhJcyTKTxRf4RL2sQRDpoOKzBYNdQDmuw==
 
 expo-modules-autolinking@2.1.9:
   version "2.1.9"
@@ -2689,6 +2689,14 @@ expo-sqlite@~15.2.9:
   version "15.2.9"
   resolved "https://registry.npmjs.org/expo-sqlite/-/expo-sqlite-15.2.9.tgz"
   integrity sha512-i21AQtzNC1aqXC5Ee/R3OGkkRLALfxWB27vIv3ae7gQfJKdr9jJbmRqd+jymPfXXy7f2EugFDEdLN8C6jWAD1A==
+
+expo-status-bar@~2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-2.2.3.tgz#09385a866732328e0af3b4588c4f349a15fd7cd0"
+  integrity sha512-+c8R3AESBoduunxTJ8353SqKAKpxL6DvcD8VKBuh81zzJyUUbfB4CVjr1GufSJEKsMzNPXZU+HJwXx7Xh7lx8Q==
+  dependencies:
+    react-native-edge-to-edge "1.6.0"
+    react-native-is-edge-to-edge "^1.1.6"
 
 expo@~53.0.7:
   version "53.0.7"
@@ -4153,6 +4161,11 @@ react-native-edge-to-edge@1.6.0:
   resolved "https://registry.npmjs.org/react-native-edge-to-edge/-/react-native-edge-to-edge-1.6.0.tgz"
   integrity sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==
 
+react-native-is-edge-to-edge@^1.1.6:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
+  integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
+
 react-native-modal@^14.0.0-rc.1:
   version "14.0.0-rc.1"
   resolved "https://registry.npmjs.org/react-native-modal/-/react-native-modal-14.0.0-rc.1.tgz"
@@ -4168,10 +4181,10 @@ react-native-qrcode-styled@^0.3.3:
     qrcode "^1.5.4"
     react-fast-compare "^3.2.2"
 
-react-native-safe-area-context@^5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.4.0.tgz#04b51940408c114f75628a12a93569d30c525454"
-  integrity sha512-JaEThVyJcLhA+vU0NU8bZ0a1ih6GiF4faZ+ArZLqpYbL6j7R3caRqj+mE3lEtKCuHgwjLg3bCxLL1GPUJZVqUA==
+react-native-safe-area-context@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.4.1.tgz#6d04eac20f99622fa13895fa7ae96199f1ecf800"
+  integrity sha512-x+g3NblZ9jof8y+XkVvaGlpMrSlixhrJJ33BRzhTAKUKctQVecO1heSXmzxc5UdjvGYBKS6kPZVUw2b8NxHcPg==
 
 react-native-screens@^4.10.0:
   version "4.10.0"
