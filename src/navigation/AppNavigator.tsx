@@ -15,7 +15,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="GroupList" component={GroupList} />
         <Stack.Screen name="AddGroup" component={AddGroup} />
         <Stack.Screen name="Dashboard" component={Dashboard} /> 
