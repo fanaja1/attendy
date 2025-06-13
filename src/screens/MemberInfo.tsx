@@ -5,6 +5,7 @@ import { RootStackParamList } from '../types/navigation';
 import { Member } from '../types/models';
 import { getMemberById } from '../database/db';
 import QRCodeCustom from '../components/QRCodeCustom';
+import AppLayout from '../components/AppLayout';
 
 type MemberInfoRouteProp = RouteProp<RootStackParamList, 'MemberInfo'>;
 
@@ -30,13 +31,13 @@ export const MemberInfo = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <AppLayout style={styles.container}>
       <Text style={styles.title}>{member.name}</Text>
       <Text style={styles.subtitle}>ID: {member.id}</Text>
       <View style={styles.qrCode}>
         <QRCodeCustom value={member.id} />
       </View>
-    </View>
+    </AppLayout>
   );
 };
 

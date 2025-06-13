@@ -6,6 +6,7 @@ import { addMember } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
 import { useLogNavigationStack } from '../utils/hooks';
+import AppLayout from '../components/AppLayout';
 
 type AddMemberNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddMember'>;
 type AddMemberRouteProp = RouteProp<RootStackParamList, 'AddMember'>;
@@ -30,7 +31,7 @@ const AddMember = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <AppLayout style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Member Name"
@@ -38,7 +39,7 @@ const AddMember = () => {
         onChangeText={setName}
       />
       <Button title="Add Member" onPress={handleAddMember} />
-    </View>
+    </AppLayout>
   );
 }
 

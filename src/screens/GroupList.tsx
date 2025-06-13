@@ -6,6 +6,7 @@ import { deleteGroup, getGroups } from '../database/db';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { useLogNavigationStack } from '../utils/hooks';
+import AppLayout from '../components/AppLayout';
 
 type GroupListNavigationProp = NativeStackNavigationProp<RootStackParamList, 'GroupList'>;
 
@@ -41,7 +42,7 @@ const GroupList = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <AppLayout style={styles.container}>
       <Text style={styles.title}>List of Groups</Text>
       <FlatList
         data={groups}
@@ -57,7 +58,7 @@ const GroupList = () => {
         )}
       />
       <Button title="Add Group" onPress={() => navigation.navigate('AddGroup')} />
-    </View>
+    </AppLayout>
   );
 }
 

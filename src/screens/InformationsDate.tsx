@@ -5,6 +5,7 @@ import { RootStackParamList } from '../types/navigation';
 import { DateEntry, Member } from '../types/models';
 import { getMembersByGroup, getPresenceMap, updateDate, setPresence } from '../database/db';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AppLayout from '../components/AppLayout';
 
 type InformationsDateRouteProp = RouteProp<RootStackParamList, 'InformationsDate'>;
 
@@ -48,7 +49,7 @@ const InformationsDate = () => {
 
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <AppLayout style={{ flex: 1, padding: 16 }}>
       <TouchableOpacity onPress={() => setShowEditDateModal(true)}>
         <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}>
           {dateEntry.value}
@@ -226,7 +227,7 @@ const InformationsDate = () => {
           )}
         </View>
       </Modal>
-    </View>
+    </AppLayout>
   );
 };
 
