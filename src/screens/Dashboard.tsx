@@ -7,6 +7,7 @@ import { DateEntry, Member, Presence } from '../types/models';
 import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../database/db';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
+import AppLayout from '../components/AppLayout';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 type DashboardRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
@@ -82,7 +83,7 @@ const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
 
 
   return (
-    <View style={styles.container}>
+    <AppLayout style={styles.container}>
       <Modal visible={showModal} transparent>
         <View style={styles.modalContainer}>
           <Text>Choisir une date :</Text>
@@ -220,7 +221,7 @@ const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
       <View style={styles.footer}>
         <Button title="Add Member" onPress={() => navigation.navigate('AddMember', { groupId })} />
       </View>
-    </View>
+    </AppLayout>
   );
 };
 

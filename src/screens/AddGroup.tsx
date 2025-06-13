@@ -6,6 +6,7 @@ import { addGroup, getMembersByGroup } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
 import uuid from 'react-native-uuid';
 import { useLogNavigationStack } from '../utils/hooks';
+import AppLayout from '../components/AppLayout';
 
 type AddGroupNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddGroup'>;
 
@@ -30,7 +31,7 @@ const AddGroup = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <AppLayout style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Group Name"
@@ -44,7 +45,7 @@ const AddGroup = () => {
         onChangeText={setLocation}
       />
       <Button title="Save" onPress={handleAddGroup} />
-    </View>
+    </AppLayout>
   );
 }
 
