@@ -1,17 +1,15 @@
 import React from 'react';
 import { View, useWindowDimensions } from 'react-native';
-import Background from '../../assets/bg.svg';
 import TopWave from '../../assets/TopWave.svg';
-import WavesTop from '../../assets/waves_top.svg';
 import BottomWave from '../../assets/BottomWave.svg';
 
-type AppBackgroundProps = React.PropsWithChildren<{}>;
+type LightBackgroundProps = React.PropsWithChildren<{}>;
 
-const AppBackground: React.FC<AppBackgroundProps> = ({ children }) => {
+const LightBackground: React.FC<LightBackgroundProps> = ({ children }) => {
   const { width, height } = useWindowDimensions();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <TopWave
         width={width}
         // height={height * 0.3}
@@ -29,4 +27,4 @@ const AppBackground: React.FC<AppBackgroundProps> = ({ children }) => {
   );
 };
 
-export default AppBackground;
+export default LightBackground;
