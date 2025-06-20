@@ -119,8 +119,6 @@ export const deleteGroup = (groupId: string) => {
 
 export const addMember = ({ id, groupId, lastName, firstName, numero, designation }: Member) => {
   try {
-    console.log('2name', firstName, 'lastName', lastName, 'numero', numero, 'designation', designation);
-
     db.runSync(
       `INSERT INTO members (id, groupId, lastName, firstName, numero, designation) VALUES (?, ?, ?, ?, ?, ?)`,
       [id, groupId, lastName, firstName, numero, designation]

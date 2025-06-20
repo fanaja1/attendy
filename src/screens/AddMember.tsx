@@ -33,9 +33,7 @@ const AddMember = () => {
       numero,
       designation,
     };
-
-    console.log('name', name, 'lastName', lastName, 'numero', numero, 'designation', designation);
-    // Ajoute le membre (adapte selon la signature de addMember)
+    
     addMember({id: newMember.id, groupId: newMember.groupId, lastName: newMember.lastName, firstName: newMember.firstName, numero: newMember.numero, designation: newMember.designation});
     navigation.goBack();
   };
