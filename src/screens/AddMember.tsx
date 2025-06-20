@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { addMember } from '../database/db';
+import { addMember, incrementTotalMembers } from '../database/db';
 import { RootStackParamList } from '../types/navigation';
-import uuid from 'react-native-uuid';
 import { useLogNavigationStack } from '../utils/hooks';
 import AppLayout from '../components/AppLayout';
 
@@ -14,19 +13,30 @@ type AddMemberRouteProp = RouteProp<RootStackParamList, 'AddMember'>;
 const AddMember = () => {
   useLogNavigationStack();
 
-  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [designation, setDesignation] = useState('');
   const navigation = useNavigation<AddMemberNavigationProp>();
   const route = useRoute<AddMemberRouteProp>();
   const { groupId } = route.params;
 
   const handleAddMember = () => {
+    // Génère un ID unique pour le membre
+    const numero = incrementTotalMembers(groupId) || 0;
+    const newMemberId = `${groupId}-${numero?.toString().padStart(3, '0')}`;
+
     const newMember = {
-      id: uuid.v4() as string,
+      id: newMemberId,
       groupId,
-      name,
+      lastName,
+      firstName,
+      numero,
+      designation,
     };
 
-    addMember(newMember.id, newMember.groupId, newMember.name);
+    console.log('name', name, 'lastName', lastName, 'numero', numero, 'designation', designation);
+    // Ajoute le membre (adapte selon la signature de addMember)
+    addMember({id: newMember.id, groupId: newMember.groupId, lastName: newMember.lastName, firstName: newMember.firstName, numero: newMember.numero, designation: newMember.designation});
     navigation.goBack();
   };
 
@@ -35,8 +45,8 @@ const AddMember = () => {
       <TextInput
         style={styles.input}
         placeholder="Member Name"
-        value={name}
-        onChangeText={setName}
+        value={firstName}
+        onChangeText={setFirstName}
       />
       <Button title="Add Member" onPress={handleAddMember} />
     </AppLayout>

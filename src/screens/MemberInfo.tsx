@@ -32,7 +32,7 @@ export const MemberInfo = () => {
 
   return (
     <AppLayout style={styles.container}>
-      <Text style={styles.title}>{member.name}</Text>
+      <Text style={styles.title}>{member.firstName}</Text>
       <Text style={styles.subtitle}>ID: {member.id}</Text>
       <View style={styles.qrCode}>
         <QRCodeCustom value={member.id} />

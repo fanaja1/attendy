@@ -194,7 +194,7 @@ const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handlePressMember(item.id)}>
                 <View style={styles.tableRow}>
-                  <Text style={styles.cell}>{item.name}</Text>
+                  <Text style={styles.cell}>{item.firstName}</Text>
                   {dates.map((dateEntry, index) => {
                     // Cherche la présence pour ce membre et cette date
                     const presence = presenceMap[item.id]?.find(p => p.date === dateEntry.value);

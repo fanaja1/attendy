@@ -154,7 +154,7 @@ const InformationsDate = () => {
           return (
             <TouchableOpacity onPress={() => setShowEditPresenceModal({ memberId: item.id })}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={{ flex: 1 }}>{item.name}</Text>
+                <Text style={{ flex: 1 }}>{item.firstName}</Text>
                 <Text>{symbol}</Text>
               </View>
             </TouchableOpacity>

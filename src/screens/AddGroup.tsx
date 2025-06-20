@@ -18,16 +18,17 @@ const AddGroup = () => {
   const navigation = useNavigation<AddGroupNavigationProp>();
 
   const handleAddGroup = () => {
+    const groupId = `${name.toUpperCase()}-${location.toUpperCase()}`;
     const newGroup = {
-      id: uuid.v4() as string,
+      id: groupId,
       name,
       location,
+      memberCount: 0,
     };
 
     addGroup(newGroup.id, newGroup.name, newGroup.location);
-    
+
     navigation.replace('Dashboard', { groupId: newGroup.id });
-    
   };
 
   return (
