@@ -156,7 +156,7 @@ const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
 
 
       <ScrollView horizontal>
-        <View>
+        <View style={styles.table}>
           <View style={styles.tableRow}>
             <Text style={[styles.cell, styles.headerCell]}>Name</Text>
             {(() => {
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fafafa',
+    // backgroundColor: '#fafafa',
   },
   header: {
     flexDirection: 'row',
@@ -241,6 +241,13 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#ddd',
     paddingTop: 10,
+  },
+  table: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    flex: 1,
+    minWidth: '100%',
+    padding: 8,
   },
   tableRow: {
     flexDirection: 'row',
