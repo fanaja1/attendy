@@ -8,6 +8,7 @@ import { addDate, getDates, getMembersByGroup, getPresenceMap } from '../databas
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
 import AppLayout from '../components/AppLayout';
+import { handleExportXLSX } from '../utils/exports';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 type DashboardRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
@@ -81,6 +82,9 @@ const Dashboard = () => {
     setTolerance('');
   };
 
+  const onPressExportButton = async () => {
+    handleExportXLSX(dates, members, presenceMap);
+  }
 
   return (
     <AppLayout style={styles.container}>
@@ -220,6 +224,7 @@ const Dashboard = () => {
 
       <View style={styles.footer}>
         <Button title="Add Member" onPress={() => navigation.navigate('AddMember', { groupId })} />
+        <Button title="Exporter XLSX" onPress={onPressExportButton} />
       </View>
     </AppLayout>
   );
