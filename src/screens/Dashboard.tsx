@@ -21,7 +21,7 @@ const Dashboard = () => {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [dates, setDates] = useState<DateEntry[]>([]);
-const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
+  const [presenceMap, setPresenceMap] = useState<Record<string, Presence[]>>({});
 
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
