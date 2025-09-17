@@ -26,14 +26,10 @@ const InformationsDate = () => {
   const [editStartTime, setEditStartTime] = useState<Date | null>(
     dateEntry.startTime ? new Date(`1970-01-01T${dateEntry.startTime}:00`) : null
   );
-  const [editEndTime, setEditEndTime] = useState<Date | null>(
-    dateEntry.endTime ? new Date(`1970-01-01T${dateEntry.endTime}:00`) : null
-  );
   const [editTolerance, setEditTolerance] = useState<string>(
     dateEntry.tolerance ? dateEntry.tolerance.toString() : '0'
   );
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   const members = getMembersByGroup(groupId);
   const presenceMap = getPresenceMap(groupId);
@@ -41,7 +37,7 @@ const InformationsDate = () => {
   // Fonction pour sauvegarder la date éditée (à adapter selon ta logique de DB)
   const handleSaveEditDate = () => {
     // Ici tu dois mettre à jour la date dans la base (ex: updateDate)
-    updateDate(dateEntry.id, editDate, editStartTime, editEndTime, editTolerance)
+    updateDate(dateEntry.id, editDate, editStartTime, editTolerance)
     // Puis éventuellement rafraîchir la page ou naviguer
     setShowEditDateModal(false);
     // Tu peux ajouter une alerte ou un toast ici
@@ -88,23 +84,6 @@ const InformationsDate = () => {
             />
           )}
 
-          <Text style={{ marginTop: 16 }}>Heure de fin :</Text>
-          <Button
-            title={editEndTime ? editEndTime.toTimeString().slice(0, 5) : 'Non défini'}
-            onPress={() => setShowEndTimePicker(true)}
-          />
-          {showEndTimePicker && (
-            <DateTimePicker
-              value={editEndTime || new Date()}
-              mode="time"
-              display="default"
-              onChange={(e, time) => {
-                if (time) setEditEndTime(time);
-                setShowEndTimePicker(false);
-              }}
-            />
-          )}
-
           <Text style={{ marginTop: 16 }}>Tolérance (minutes) :</Text>
           <TextInput
             keyboardType="numeric"
@@ -131,7 +110,6 @@ const InformationsDate = () => {
                 // Rafraîchir la date affichée après sauvegarde
                 dateEntry.value = editDate.toISOString().slice(0, 10);
                 if (editStartTime) dateEntry.startTime = editStartTime.toTimeString().slice(0, 5);
-                if (editEndTime) dateEntry.endTime = editEndTime.toTimeString().slice(0, 5);
                 dateEntry.tolerance = parseInt(editTolerance, 10) || 0;
               }}
             />

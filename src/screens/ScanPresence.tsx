@@ -150,8 +150,8 @@ const ScanPresence = () => {
             keyExtractor={(_, idx) => idx.toString()}
             renderItem={({ item }) => {
               let label = item.value;
-              if (item.startTime && item.endTime) {
-                label += `\n${item.startTime}-${item.endTime}`;
+              if (item.startTime) {
+                label += `\n${item.startTime}`;
                 if (item.tolerance > 0) {
                   label += ` (tolérance: ${item.tolerance}m)`;
                 }

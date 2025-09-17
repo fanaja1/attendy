@@ -32,7 +32,6 @@ export const setupDatabase = () => {
         groupId TEXT NOT NULL,
         value TEXT NOT NULL,
         startTime TEXT DEFAULT NULL,
-        endTime TEXT DEFAULT NULL,
         tolerance INTEGER DEFAULT 0,
         FOREIGN KEY (groupId) REFERENCES groups(id)
       )
@@ -162,13 +161,12 @@ export const addDate = (
   groupId: string,
   value: string,
   startTime: string | null = null,
-  endTime: string | null = null,
   tolerance: number = 0
 ) => {
   try {
     db.runSync(
-      'INSERT INTO dates (groupId, value, startTime, endTime, tolerance) VALUES (?, ?, ?, ?, ?)',
-      [groupId, value, startTime, endTime, tolerance]
+      'INSERT INTO dates (groupId, value, startTime, tolerance) VALUES (?, ?, ?, ?)',
+      [groupId, value, startTime, tolerance]
     );
   } catch (error) {
     console.error('Error adding date:', error);
@@ -178,7 +176,7 @@ export const addDate = (
 export const getDates = (groupId: string): DateEntry[] => {
   try {
     const result = db.getAllSync(
-      'SELECT id, value, startTime, endTime, tolerance FROM dates WHERE groupId = ?',
+      'SELECT id, value, startTime, tolerance FROM dates WHERE groupId = ?',
       [groupId]
     ) as DateEntry[];
     return result;
@@ -256,18 +254,16 @@ export function updateDate(
   dateId: string,
   newDate: Date,
   newStartTime: Date | null,
-  newEndTime: Date | null,
   newTolerance: string
 ) {
   try {
     const value = newDate.toISOString().slice(0, 10); // format YYYY-MM-DD
     const startTime = newStartTime ? newStartTime.toTimeString().slice(0, 5) : null; // format HH:MM
-    const endTime = newEndTime ? newEndTime.toTimeString().slice(0, 5) : null; // format HH:MM
     const tolerance = parseInt(newTolerance, 10) || 0;
 
     db.runSync(
-      `UPDATE dates SET value = ?, startTime = ?, endTime = ?, tolerance = ? WHERE id = ?`,
-      [value, startTime, endTime, tolerance, dateId]
+      `UPDATE dates SET value = ?, startTime = ?, tolerance = ? WHERE id = ?`,
+      [value, startTime, tolerance, dateId]
     );
   } catch (error) {
     console.error('Error updating date:', error);

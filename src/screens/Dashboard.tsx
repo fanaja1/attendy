@@ -28,12 +28,10 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [useTime, setUseTime] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
   const [tolerance, setTolerance] = useState('');
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -59,8 +57,7 @@ const Dashboard = () => {
     let dateStr = selectedDate.toISOString().slice(0, 10);
     if (useTime) {
       const start = startTime.toTimeString().slice(0, 5);
-      const end = endTime.toTimeString().slice(0, 5);
-      dateStr += ` ${start}-${end}`;
+      dateStr += ` ${start}`;
       if (tolerance) {
         dateStr += ` (tolérance: ${tolerance}min)`;
       }
@@ -70,7 +67,6 @@ const Dashboard = () => {
       groupId,
       dateStr, // ta date principale
       useTime ? startTime.toTimeString().slice(0, 5) : null,
-      useTime ? endTime.toTimeString().slice(0, 5) : null,
       useTime && tolerance ? parseInt(tolerance, 10) : 0
     );
 
@@ -121,20 +117,6 @@ const Dashboard = () => {
                   onChange={(e, time) => {
                     if (time) setStartTime(time);
                     setShowStartTimePicker(false);
-                  }}
-                />
-              )}
-
-              <Text>Heure de fin :</Text>
-              <Button title="Choisir" onPress={() => setShowEndTimePicker(true)} />
-              {showEndTimePicker && (
-                <DateTimePicker
-                  value={endTime}
-                  mode="time"
-                  display="default"
-                  onChange={(e, time) => {
-                    if (time) setEndTime(time);
-                    setShowEndTimePicker(false);
                   }}
                 />
               )}
