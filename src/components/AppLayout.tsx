@@ -11,7 +11,7 @@ interface AppLayoutProps {
 const AppLayout = ({ children, style }: AppLayoutProps) => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <StatusBar style={'light'} translucent backgroundColor="transparent" />
+            <StatusBar style={'dark'} />
             <View style={[{ flex: 1 }, style]}>
                 {children}
             </View>

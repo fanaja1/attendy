@@ -6,20 +6,24 @@ const db = SQLite.openDatabaseSync('attendy.db');
 export const setupDatabase = () => {
   try {
     db.execSync(`
-      CREATE TABLE IF NOT EXISTS groupes (
+      CREATE TABLE IF NOT EXISTS groups (
         id TEXT PRIMARY KEY NOT NULL,
         name TEXT,
-        location TEXT
-      );
+        location TEXT,
+        memberCount INTEGER DEFAULT 0
+      )
     `);
 
     db.execSync(`
       CREATE TABLE IF NOT EXISTS members (
         id TEXT PRIMARY KEY NOT NULL,
         groupId TEXT,
-        name TEXT,
-        FOREIGN KEY (groupId) REFERENCES groupes(id)
-      );
+        lastName TEXT,
+        firstName TEXT,
+        numero INT,
+        designation TEXT,
+        FOREIGN KEY (groupId) REFERENCES groups(id)
+      )
     `);
 
     db.execSync(`
@@ -30,8 +34,8 @@ export const setupDatabase = () => {
         startTime TEXT DEFAULT NULL,
         endTime TEXT DEFAULT NULL,
         tolerance INTEGER DEFAULT 0,
-        FOREIGN KEY (groupId) REFERENCES groupes(id)
-      );
+        FOREIGN KEY (groupId) REFERENCES groups(id)
+      )
     `);
 
     // Ajout des colonnes status et retardMinutes si elles n'existent pas déjà
@@ -44,7 +48,7 @@ export const setupDatabase = () => {
         retardMinutes INTEGER DEFAULT 0,
         FOREIGN KEY (memberId) REFERENCES members(id),
         FOREIGN KEY (dateId) REFERENCES dates(id)
-      );
+      )
     `);
 
     // Pour migration si la table existe déjà sans les colonnes :
@@ -59,24 +63,41 @@ export const setupDatabase = () => {
 
 export const addGroup = (id: string, name: string, location: string) => {
   try {
-    db.runSync(`INSERT INTO groupes (id, name, location) VALUES (?, ?, ?)`, [id, name, location]);
+    db.runSync(`INSERT INTO groups (id, name, location) VALUES (?, ?, ?)`, [id, name, location]);
   } catch (error) {
     console.error('Error adding group:', error);
   }
 };
 
+export const incrementTotalMembers = (groupId: string): number | null => {
+  try {
+    db.runSync(
+      `UPDATE groups SET memberCount = memberCount + 1 WHERE id = ?`,
+      [groupId]
+    );
+    const result = db.getFirstSync(
+      `SELECT memberCount FROM groups WHERE id = ?`,
+      [groupId]
+    ) as { memberCount?: number } | undefined;
+    return result && result.memberCount !== undefined ? result.memberCount : null;
+  } catch (error) {
+    console.error('Error incrementing total members:', error);
+    return 0;
+  }
+};
+
 export const getGroups = (): Group[] => {
   try {
-    return db.getAllSync('SELECT * FROM groupes') as Group[];
+    return db.getAllSync('SELECT * FROM groups') as Group[];
   } catch (error) {
-    console.error('Error fetching groupes:', error);
+    console.error('Error fetching groups:', error);
     return [];
   }
 };
 
 export const updateGroup = (id: string, name: string, location: string) => {
   try {
-    db.runSync(`UPDATE groupes SET name = ?, location = ? WHERE id = ?`, [name, location, id]);
+    db.runSync(`UPDATE groups SET name = ?, location = ? WHERE id = ?`, [name, location, id]);
   } catch (error) {
     console.error('Error updating group:', error);
   }
@@ -90,15 +111,18 @@ export const deleteGroup = (groupId: string) => {
     }
     db.runSync('DELETE FROM members WHERE groupId = ?', [groupId]);
     db.runSync('DELETE FROM dates WHERE groupId = ?', [groupId]);
-    db.runSync('DELETE FROM groupes WHERE id = ?', [groupId]);
+    db.runSync('DELETE FROM groups WHERE id = ?', [groupId]);
   } catch (error) {
     console.error('Error deleting group and associated data:', error);
   }
 };
 
-export const addMember = (id: string, groupId: string, name: string) => {
+export const addMember = ({ id, groupId, lastName, firstName, numero, designation }: Member) => {
   try {
-    db.runSync(`INSERT INTO members (id, groupId, name) VALUES (?, ?, ?)`, [id, groupId, name]);
+    db.runSync(
+      `INSERT INTO members (id, groupId, lastName, firstName, numero, designation) VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, groupId, lastName, firstName, numero, designation]
+    );
   } catch (error) {
     console.error('Error adding member:', error);
   }

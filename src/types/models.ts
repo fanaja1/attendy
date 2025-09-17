@@ -3,11 +3,16 @@ export interface Group {
   id: string;
   name: string;
   location: string;
+  memberCount: number;
 }
 
 export interface Member {
   id: string;
-  name: string;
+  groupId: string;
+  firstName: string;
+  lastName: string;
+  numero: number;
+  designation: string;
 };
 
 export interface DateEntry {

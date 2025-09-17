@@ -1,6 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import AppBackground from '../components/AppBackground'
 
 import Home from '../screens/Home'
 import GroupList from '../screens/GroupList'
@@ -10,13 +9,28 @@ import AddMember from '../screens/AddMember'
 import MemberInfo from '../screens/MemberInfo'
 import ScanPresence from '../screens/ScanPresence'
 import InformationsDate from '../screens/InformationsDate'
+import LightBackground from '../components/LightBackground'
+import ReversedLightBackground from '../components/ReversedLightBackground'
 
-const withBackground = <P extends object>(ScreenComponent: React.ComponentType<P>) =>
-  (props: P) => (
-    <AppBackground>
-      <ScreenComponent {...props} />
-    </AppBackground>
-  )
+const backgrounder = <P extends object>(ScreenComponent: React.ComponentType<P>, index: number) =>
+  (props: P) => {
+    switch (index) {
+      case 1:
+        return (
+          <LightBackground>
+            <ScreenComponent {...props} />
+          </LightBackground>
+        )
+      case 2:
+        return (
+          <ReversedLightBackground>
+            <ScreenComponent {...props} />
+          </ReversedLightBackground>
+        )
+      default:
+        return <ScreenComponent {...props} />
+    }
+  }
 
 const Stack = createNativeStackNavigator()
 
@@ -24,14 +38,14 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={withBackground(Home)} />
-        <Stack.Screen name="GroupList" component={withBackground(GroupList)} />
-        <Stack.Screen name="AddGroup" component={withBackground(AddGroup)} />
-        <Stack.Screen name="Dashboard" component={withBackground(Dashboard)} />
-        <Stack.Screen name="AddMember" component={withBackground(AddMember)} />
-        <Stack.Screen name="MemberInfo" component={withBackground(MemberInfo)} />
-        <Stack.Screen name="ScanPresence" component={withBackground(ScanPresence)} />
-        <Stack.Screen name="InformationsDate" component={withBackground(InformationsDate)} />
+        <Stack.Screen name="Home" component={backgrounder(Home, 1)} />
+        <Stack.Screen name="GroupList" component={backgrounder(GroupList, 2)} />
+        <Stack.Screen name="AddGroup" component={backgrounder(AddGroup, 1)} />
+        <Stack.Screen name="Dashboard" component={backgrounder(Dashboard, 1)} />
+        <Stack.Screen name="AddMember" component={backgrounder(AddMember, 1)} />
+        <Stack.Screen name="MemberInfo" component={backgrounder(MemberInfo, 1)} />
+        <Stack.Screen name="ScanPresence" component={backgrounder(ScanPresence, 1)} />
+        <Stack.Screen name="InformationsDate" component={backgrounder(InformationsDate, 1)} />
       </Stack.Navigator>
     </NavigationContainer>
   )

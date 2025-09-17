@@ -53,7 +53,10 @@ const GroupList = () => {
               <Text style={styles.groupName}>{item.name}</Text>
               <Text style={styles.groupLocation}>{item.location}</Text>
             </View>
-            <Button title="Delete" color="#d00" onPress={() => handleDelete(item.id)} />
+            <View style={styles.rightSection}>
+              <Text style={styles.groupMembers}>Members: {item.memberCount}</Text>
+              <Button title="Delete" color="#d00" onPress={() => handleDelete(item.id)} />
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -66,7 +69,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    // backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 24,
@@ -97,6 +100,16 @@ const styles = StyleSheet.create({
   groupLocation: {
     fontSize: 14,
     color: '#777',
+  },
+  rightSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  groupMembers: {
+    fontSize: 14,
+    color: '#555',
+    marginRight: 8,
   },
 });
 
