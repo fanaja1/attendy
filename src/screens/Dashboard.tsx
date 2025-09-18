@@ -141,67 +141,62 @@ const Dashboard = () => {
       </View>
 
 
-      <ScrollView horizontal>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={[styles.cell, styles.headerCell]}>Name</Text>
-            {(() => {
-              const dateCounts: Record<string, number> = {};
-              dates.forEach((dateEntry) => {
-                const dateOnly = dateEntry.value.slice(0, 10);
-                dateCounts[dateOnly] = (dateCounts[dateOnly] || 0) + 1;
-              });
+      <ScrollView style={styles.table} contentContainerStyle={{ flexDirection: 'row' }}>
+        <View>
+          <View style={{height: 100}}></View>
+          {members.map((item, idx) => (
+            <TouchableOpacity key={item.id} onPress={() => handlePressMember(item.id)}>
+              <View style={styles.tableRow}>
+                <Text style={styles.nameCell}>{item.firstName}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-              const dateSeen: Record<string, number> = {};
-              return dates.map((dateEntry, index) => {
+        {/* Scroll horizontal pour les dates et présences */}
+        <ScrollView horizontal style={{ flex: 1 }}>
+          <View>
+            {/* Header dates sur une seule ligne */}
+            <View style={styles.tableHeader}>
+              {dates.map((dateEntry, index) => {
                 const dateOnly = dateEntry.value.slice(0, 10);
-                dateSeen[dateOnly] = (dateSeen[dateOnly] || 0) + 1;
-                let label = dateOnly;
-                if (dateCounts[dateOnly] > 1) {
-                  label += ` (${dateSeen[dateOnly]})`;
-                }
                 return (
                   <TouchableOpacity
                     key={index}
                     onPress={() => navigation.navigate('InformationsDate', { groupId, dateEntry })}
+                    style={styles.headerCell}
                   >
-                    <Text style={[styles.cell, styles.headerCell]}>
-                      {label}
-                    </Text>
+                    <View style={{ transform: [{ rotate: '-90deg' }]}}>
+                      <Text style={[styles.rotatedDate, { width: 100, textAlign: 'center', padding: 0 }]}>
+                        {dateOnly}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 );
-              });
-            })()}
+              })}
+            </View>
+            {/* Lignes de présences */}
+            {members.map((item) => (
+              <View key={item.id} style={styles.tableRow}>
+                {dates.map((dateEntry, index) => {
+                  const presence = presenceMap[item.id]?.find(p => p.date === dateEntry.value);
+                  let symbol = '❌';
+                  if (presence) {
+                    if (presence.status === 'present') symbol = '✔️';
+                    else if (presence.status === 'retard') symbol = `⏰${presence.retardMinutes}`;
+                    else if (presence.status === 'permission') symbol = '📝';
+                    else if (presence.status === 'absent') symbol = '❌';
+                  }
+                  return (
+                    <Text key={index} style={styles.dateCell}>
+                      {symbol}
+                    </Text>
+                  );
+                })}
+              </View>
+            ))}
           </View>
-
-          <FlatList
-            data={members}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handlePressMember(item.id)}>
-                <View style={styles.tableRow}>
-                  <Text style={styles.cell}>{item.firstName}</Text>
-                  {dates.map((dateEntry, index) => {
-                    // Cherche la présence pour ce membre et cette date
-                    const presence = presenceMap[item.id]?.find(p => p.date === dateEntry.value);
-                    let symbol = '❌';
-                    if (presence) {
-                      if (presence.status === 'present') symbol = '✔️';
-                      else if (presence.status === 'retard') symbol = `⏰${presence.retardMinutes}`;
-                      else if (presence.status === 'permission') symbol = '📝';
-                      else if (presence.status === 'absent') symbol = '❌';
-                    }
-                    return (
-                      <Text key={index} style={styles.cell}>
-                        {symbol}
-                      </Text>
-                    );
-                  })}
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+        </ScrollView>
       </ScrollView>
 
       <View style={styles.footer}>
@@ -215,8 +210,7 @@ const Dashboard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    // backgroundColor: '#fafafa',
+    padding: 6,
   },
   header: {
     flexDirection: 'row',
@@ -234,25 +228,58 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flex: 1,
     minWidth: '100%',
-    padding: 8,
+    padding: 6,
+  },
+  nameCell: {
+    width: 120,
+    maxWidth: 120,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    textAlign: 'left',
+    textAlignVertical: 'center',
+    fontSize: 16,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    paddingLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  dateCell: {
+    width: 30,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    textAlign: 'center',
+    fontSize: 16,
+    backgroundColor: '#fff',
+    // borderRadius: 6,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
   },
-  cell: {
-    width: 100,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    textAlign: 'center',
+  tableHeader: {
+    flexDirection: 'row',
+    // width: '100%',
+    alignItems: 'flex-end',
+    marginBottom: 0,
   },
   headerCell: {
-    fontWeight: 'bold',
-    backgroundColor: '#eee',
+    width: 30,
+    height:100,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 16,
+    padding: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  // Styles ajoutés :
   modalContainer: {
     backgroundColor: 'white',
     margin: 32,
@@ -280,6 +307,15 @@ const styles = StyleSheet.create({
     width: 80,
     alignSelf: 'flex-start',
     backgroundColor: '#fff',
+  },
+  rotatedDate: {
+    height: 30,
+    fontSize: 12,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    padding: 0,
+    backgroundColor: '#eee',
+    fontWeight: 'bold',
   },
 });
 
