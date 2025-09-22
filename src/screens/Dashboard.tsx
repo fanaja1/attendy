@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLogNavigationStack } from '../utils/hooks';
 import AppLayout from '../components/AppLayout';
 import { handleExportXLSX } from '../utils/exports';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 type DashboardRouteProp = RouteProp<RootStackParamList, 'Dashboard'>;
@@ -32,6 +33,8 @@ const Dashboard = () => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -136,10 +139,19 @@ const Dashboard = () => {
       </Modal>
 
       <View style={styles.header}>
-        <Button title="Scan Presence" onPress={() => navigation.navigate('ScanPresence', { groupId })} />
-        <Button title="Add Date" onPress={() => setShowModal(true)} />
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={styles.appTitle}>Attendy</Text>
+        </View>
+        <Menu>
+          <MenuTrigger>
+            <Text style={styles.menuIcon}>⋮</Text>
+          </MenuTrigger>
+          <MenuOptions>
+            <MenuOption onSelect={() => navigation.navigate('AddMember', { groupId })} text="Add Member" />
+            <MenuOption onSelect={onPressExportButton} text="Exporter XLSX" />
+          </MenuOptions>
+        </Menu>
       </View>
-
 
       <ScrollView style={styles.table} contentContainerStyle={{ flexDirection: 'row' }}>
         <View>
@@ -200,8 +212,12 @@ const Dashboard = () => {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Button title="Add Member" onPress={() => navigation.navigate('AddMember', { groupId })} />
-        <Button title="Exporter XLSX" onPress={onPressExportButton} />
+        <View style={styles.footerBtn}>
+          <Button title="Add Date" onPress={() => setShowModal(true)} color="#2e86de" />
+        </View>
+        <View style={styles.footerBtn}>
+          <Button title="Scan Presence" onPress={() => navigation.navigate('ScanPresence', { groupId })} color="#2e86de" />
+        </View>
       </View>
     </AppLayout>
   );
@@ -210,19 +226,43 @@ const Dashboard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 6,
+    paddingHorizontal: 6,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    backgroundColor: 'transparent',
+  },
+  appTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  menuIcon: {
+    fontSize: 28,
+    padding: 8,
+    color: '#fff',
   },
   footer: {
     marginTop: 16,
-    borderTopWidth: 1,
     borderColor: '#ddd',
-    paddingTop: 10,
+    marginBottom: 16,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    gap: 12,
   },
+  footerBtn: {
+  flex: 1,
+  marginHorizontal: 20,
+  minWidth: 50, 
+  maxWidth: 180, 
+  alignSelf: 'stretch', 
+},
   table: {
     backgroundColor: '#fff',
     borderRadius: 8,

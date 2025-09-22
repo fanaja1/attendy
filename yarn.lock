@@ -4711,6 +4711,11 @@ react-native-modal@^14.0.0-rc.1:
   dependencies:
     react-native-animatable "1.4.0"
 
+react-native-popup-menu@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/react-native-popup-menu/-/react-native-popup-menu-0.18.0.tgz#723c4df6b790ee3cc92ae698e7e5844ee1a170f9"
+  integrity sha512-XD3gyp/hwL5YWw2J034DerfvbJ6S2YHqAzvqAFRU+UGnFD4JyTqggfm4UyynBD26O1PDoRb45Loil+NZCGfCnA==
+
 react-native-qrcode-styled@^0.3.3:
   version "0.3.3"
   resolved "https://registry.npmjs.org/react-native-qrcode-styled/-/react-native-qrcode-styled-0.3.3.tgz"

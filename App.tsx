@@ -3,6 +3,7 @@ import { View, ActivityIndicator } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import AppNavigator from './src/navigation/AppNavigator';
+import { MenuProvider } from 'react-native-popup-menu';
 
 // Garde l'écran de démarrage visible jusqu'à ce que la police soit chargée
 SplashScreen.preventAutoHideAsync();
@@ -42,7 +43,9 @@ const App = () => {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <AppNavigator />
+      <MenuProvider>
+        <AppNavigator />
+      </MenuProvider>
     </View>
   );
 };
